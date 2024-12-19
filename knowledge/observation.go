@@ -15,8 +15,9 @@ const (
 
 type Observation struct {
 	Origin   core.Origin `json:"origin"`
-	Latency  int
-	Gradient int
+	Latency  int         `json:"latency"`  // Milliseconds for the 95th percentile
+	Gradient int         `json:"gradient"` // Rate of change
+	RPS      int         `json:"rps"`      // Requests per second
 }
 
 func GetObservation(h messaging.Notifier, agentId string, msg *messaging.Message) (Observation, *core.Status) {
