@@ -17,12 +17,12 @@ type Impression struct {
 }
 
 type Frame struct {
-	Observe      Observation
-	Impress      Impression
-	ReasonId     string
-	RateLimiting int // Percentage of traffic
-	Stars        int
-	StarsReason  string
+	Observe     Observation
+	Impress     Impression
+	ReasonId    string
+	RateLimit   int // Percentage of traffic
+	Stars       int
+	StarsReason string
 }
 
 func NewFrame(o Observation) *Frame {
