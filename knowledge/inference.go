@@ -107,8 +107,8 @@ func reasoning(f *Frame) {
 	if f == nil {
 		return
 	}
-	r := inferReason(f)
-	f.Action = r.action
+	//r := inferReason(f)
+	//f.Action = r.action
 }
 
 func inferReason(f *Frame) reason {
