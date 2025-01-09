@@ -11,7 +11,7 @@ func Query(class string, h http.Header) (Frame, error) {
 	return nil, nil
 }
 
-func Select(uri string, h http.Header) (Frame, error) {
+func Get(uri string, h http.Header) (Frame, error) {
 	return nil, nil
 }
 
