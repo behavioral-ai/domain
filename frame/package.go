@@ -1,25 +1,33 @@
 package frame
 
-import "net/http"
+import (
+	"errors"
+	"net/http"
+)
 
 const (
 	PkgPath = "github/behavioral-ai/domain/frame"
 )
 
 // Query - how to find a frame
-func Query(class string, h http.Header) (Frame, error) {
-	return nil, nil
+func Query[T []any](class string, h http.Header) (t []T, err error) {
+	return t, nil
 }
 
-func Get(uri string, h http.Header) (Frame, error) {
-	return nil, nil
+func Get[T any](uri string) (t T, err error) {
+	if uri == "" {
+		return t, errors.New("error: Frame uri is empty")
+	}
+
+	return t, err
 }
 
-func Update(uri string, h http.Header) error {
+func Update(f Frame) error {
 	return nil
 }
 
-func Insert(class string, f Frame) error {
+func Insert(f Frame) error {
 	// Create the uri based on class + unique id
+	// Need a function for this
 	return nil
 }
