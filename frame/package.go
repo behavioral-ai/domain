@@ -2,7 +2,6 @@ package frame
 
 import (
 	"errors"
-	"net/http"
 )
 
 const (
@@ -10,7 +9,7 @@ const (
 )
 
 // Query - how to find a frame
-func Query[T []any](class string, h http.Header) (t []T, err error) {
+func Query[T []any](class string, h Header) (t []T, err error) {
 	return t, nil
 }
 
