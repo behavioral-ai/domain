@@ -9,7 +9,7 @@ const (
 )
 
 // Query - how to find a frame
-func Query[T []any](class string, h Header) (t []T, err error) {
+func Query[T any](template string, terms Map) (t []T, err error) {
 	return t, nil
 }
 
