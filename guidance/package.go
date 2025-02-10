@@ -1,6 +1,9 @@
 package guidance
 
-import "github.com/behavioral-ai/core/core"
+import (
+	"github.com/behavioral-ai/core/aspect"
+	"github.com/behavioral-ai/domain/common"
+)
 
 const (
 	PkgPath    = "github/behavioral-ai/guidance/guidance"
@@ -17,12 +20,12 @@ const (
 	EastZoneB  = "e-b"
 )
 
-func GetRegion(origin core.Origin) ([]HostEntry, *core.Status) {
+func GetRegion(origin common.Origin) ([]HostEntry, *aspect.Status) {
 	if origin.Region == WestRegion {
-		return westData, core.StatusOK()
+		return westData, aspect.StatusOK()
 	}
 	if origin.Region == CentralRegion {
-		return centralData, core.StatusOK()
+		return centralData, aspect.StatusOK()
 	}
-	return []HostEntry{}, core.StatusNotFound()
+	return []HostEntry{}, aspect.StatusNotFound()
 }
