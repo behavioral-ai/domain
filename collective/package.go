@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -34,7 +35,15 @@ type Uri string
 
 // ResolutionUrn -
 func ResolutionUrn(name Urn) Urn {
-	return name
+	return Urn(strings.Replace(string(name), ThingNSS, ResolutionNSS, 1))
+	/*i := strings.Index(string(name), ThingNSS)
+	if i >= 0 {
+		offset := i + len(ThingNSS) + 1
+		return name[0:i] + ResolutionNSS + ":" + name[offset:]
+	}
+
+	*/
+	//return name
 }
 
 // IAppend - append

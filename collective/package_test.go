@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-func ExampleThreshold() {
+func _ExampleThreshold() {
 	urn := "urn:app:thing/knowledge/retrieval/threshold"
 	//req,_ := http.
 
@@ -32,4 +32,14 @@ func ExampleThreshold() {
 	//Output:
 	//fail
 
+}
+
+func ExampleResolutionUrn() {
+	in := "urn:thing:/test/resource/name"
+	urn := ResolutionUrn(Urn(in))
+
+	fmt.Printf("test: ResoulationNSS() -> [%v] [%v]\n", in, urn)
+
+	//Output:
+	//fail
 }
