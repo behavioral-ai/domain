@@ -12,9 +12,7 @@ type resolution struct {
 var (
 	rsm         sync.Mutex
 	version     = 1
-	resolutions = []resolution{
-		{Id: thing{Name: "urn:agent:resolution/test-thing", Cn: "cn"}, Thing: "urn:agent:thing/test-thing", Reference: "test-ref", Version: 1},
-	}
+	resolutions []resolution
 )
 
 func resolutionAppend(thing1, author Urn, ref Uri) bool {

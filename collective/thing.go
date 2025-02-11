@@ -13,9 +13,7 @@ type thing struct {
 
 var (
 	tm     sync.Mutex
-	things = []thing{
-		{Name: "urn:agent:thing/test", Cn: "cn", Created: "2024-05-11"},
-	}
+	things []thing
 )
 
 func thingAppend(name, author Urn, cn string, ref Uri) bool {

@@ -36,14 +36,7 @@ type Uri string
 // ResolutionUrn -
 func ResolutionUrn(name Urn) Urn {
 	return Urn(strings.Replace(string(name), ThingNSS, ResolutionNSS, 1))
-	/*i := strings.Index(string(name), ThingNSS)
-	if i >= 0 {
-		offset := i + len(ThingNSS) + 1
-		return name[0:i] + ResolutionNSS + ":" + name[offset:]
-	}
 
-	*/
-	//return name
 }
 
 // IAppend - append
@@ -56,12 +49,24 @@ type IAppend struct {
 var Append = func() *IAppend {
 	return &IAppend{
 		Thing: func(ctx context.Context, name, author Urn, cn string, ref Uri) *aspect.Status {
+			ok := thingAppend(name, author, cn, ref)
+			if !ok {
+				return aspect.StatusBadRequest()
+			}
 			return aspect.StatusOK()
 		},
 		Relation: func(ctx context.Context, thing1, thing2, author Urn) *aspect.Status {
+			ok := relationAppend(thing1, thing2, author)
+			if !ok {
+				return aspect.StatusBadRequest()
+			}
 			return aspect.StatusOK()
 		},
 		Resolution: func(ctx context.Context, thing, author Urn, ref Uri) *aspect.Status {
+			ok := resolutionAppend(thing, author, ref)
+			if !ok {
+				return aspect.StatusBadRequest()
+			}
 			return aspect.StatusOK()
 		},
 	}
@@ -96,8 +101,4 @@ type Notify func(thing, event Urn)
 
 func AddNotification(thing Urn, fn Notify) *aspect.Status {
 	return addNotification(thing, fn)
-}
-
-func RemoveNotification(thing Urn) *aspect.Status {
-	return removeNotification(thing)
 }
