@@ -12,16 +12,3 @@ package collective
 //  assigned-name = "urn" ":" NID ":" NSS
 // Urn syntax : "urn" : NID : NSS
 // NID == Domain
-
-// Applications can create as many domains/NISD as needed
-// "agent" is the reserved domain for the agent collective supporting agent development
-
-const (
-	AgentNID = "agent" // Restricted NID/Domain
-
-	ThingNSS    = "thing"    // urn:agent:thing.{module-package}:{type}
-	AspectNSS   = "aspect"   // urn:agent:aspect.testing-aspect
-	FrameNSS    = "frame"    // urn:agent:frame:testing-frame
-	RuleNSS     = "rule"     // urn:agent:rule:testing-rule
-	GuidanceNSS = "guidance" // urn:agent:guidance:testing-rule
-)

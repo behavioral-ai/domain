@@ -9,12 +9,33 @@ import (
 )
 
 const (
-	Name            = "urn:collective"
-	AnonymousAuthor = "urn:author:anonymous"
+	Name          = "urn:collective"
+	AnonymousName = "urn:author:anonymous"
+
+	AgentNID = "agent" // Restricted NID/Domain
+
+	ThingNSS    = "thing"    // urn:{NID}:thing:{module-package}:{type}
+	AspectNSS   = "aspect"   // urn:{NID}:aspect:testing-aspect
+	AuthorNSS   = "author"   // urn:{NID}:author:testing-aspect
+	RuleNSS     = "rule"     // urn:{NID}:rule:testing-rule
+	GuidanceNSS = "guidance" // urn:{NID}:guidance:testing-rule
+
+	RelationNSS   = "relation"   // urn:{NID}:relation:testing-frame
+	ResolutionNSS = "resolution" // urn:{NID}:resolution:testing-frame
+
 )
 
 type Urn string
 type Uri string
+
+// Urn
+// Applications can create as many domains/NISD as needed
+// "agent" is the reserved domain for the agent collective supporting agent development
+
+// ResolutionUrn -
+func ResolutionUrn(name Urn) Urn {
+	return name
+}
 
 // IAppend - append
 type IAppend struct {
@@ -57,7 +78,3 @@ var Resolver = func() *IResolver {
 		},
 	}
 }()
-
-func ResolutionNSS(name Urn) Urn {
-	return name
-}
