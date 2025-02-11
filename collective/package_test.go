@@ -7,6 +7,7 @@ import (
 
 func ExampleThreshold() {
 	urn := "urn:app:thing/knowledge/retrieval/threshold"
+	//req,_ := http.
 
 	urn = "https://google.com/search?exist"
 	u, err := url.Parse(urn)
