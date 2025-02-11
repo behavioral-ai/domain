@@ -11,11 +11,11 @@ import (
 
 const (
 	Name          = "urn:collective"
-	AnonymousName = "urn:author:anonymous"
+	AnonymousName = "author:anonymous"
 
 	AgentNID     = "agent" // Restricted NID/Domain
 	EventNID     = "event"
-	EventChanged = "urn:event:changed"
+	EventChanged = "event:changed"
 
 	ThingNSS    = "thing"    // urn:{NID}:thing:{module-package}:{type}
 	AuthorNSS   = "author"   // urn:{NID}:author:testing-aspect
