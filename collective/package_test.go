@@ -35,11 +35,12 @@ func _ExampleThreshold() {
 }
 
 func ExampleResolutionUrn() {
-	in := "urn:thing:/test/resource/name"
+	in := "thing:/test/resource/name"
 	urn := ResolutionUrn(Urn(in))
 
-	fmt.Printf("test: ResoulationNSS() -> [%v] [%v]\n", in, urn)
+	fmt.Printf("test: ResolutionUrn() -> [%v] [%v]\n", in, urn)
 
 	//Output:
-	//fail
+	//test: ResolutionUrn() -> [thing:/test/resource/name] [resolution:/test/resource/name]
+
 }

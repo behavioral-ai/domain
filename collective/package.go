@@ -33,7 +33,7 @@ type Uri string
 // Applications can create as many domains/NISD as needed
 // "agent" is the reserved domain for the agent collective supporting agent development
 
-// ResolutionUrn -
+// ResolutionUrn - create resolution Urn
 func ResolutionUrn(name Urn) Urn {
 	return Urn(strings.Replace(string(name), ThingNSS, ResolutionNSS, 1))
 
@@ -46,6 +46,7 @@ type IAppend struct {
 	Resolution func(ctx context.Context, thing, author Urn, ref Uri) *aspect.Status
 }
 
+// Append -
 var Append = func() *IAppend {
 	return &IAppend{
 		Thing: func(ctx context.Context, name, author Urn, cn string, ref Uri) *aspect.Status {
@@ -80,6 +81,7 @@ type IResolver struct {
 	Request    func(ctx context.Context, name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status)
 }
 
+// Resolver -
 var Resolver = func() *IResolver {
 	return &IResolver{
 		Get: func(ctx context.Context, name Urn, values url.Values, fragment string) (body []byte, status *aspect.Status) {
@@ -97,8 +99,10 @@ var Resolver = func() *IResolver {
 	}
 }()
 
+// Notify - notification function
 type Notify func(thing, event Urn)
 
+// AddNotification - create a notification
 func AddNotification(thing Urn, fn Notify) *aspect.Status {
 	return addNotification(thing, fn)
 }
