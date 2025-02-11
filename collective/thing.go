@@ -14,7 +14,7 @@ type thing struct {
 var (
 	tm     sync.Mutex
 	things = []thing{
-		{Name: "urn:nid:thing/test"},
+		{Name: "urn:agent:thing/test", Cn: "cn", Created: "2024-05-11"},
 	}
 )
 
@@ -24,7 +24,10 @@ func thingAppend(name, author Urn, cn string, ref Uri) bool {
 	}
 	tm.Lock()
 	defer tm.Unlock()
-	things = append(things, thing{Name: name})
+	things = append(things, thing{Name: name, Cn: cn, Created: "2024-02-11"})
+	if ref != "" {
+		return resolutionAppend(name, author, ref)
+	}
 	return true
 }
 

@@ -11,7 +11,7 @@ type relation struct {
 var (
 	rm        sync.Mutex
 	relations = []relation{
-		{Thing1: "test:one", Thing2: "test:two"},
+		{Created: "2024-02-10", Thing1: "urn:agent:relation/test/one", Thing2: "urn:agent:thing/test/two"},
 	}
 )
 
@@ -21,7 +21,7 @@ func relationAppend(thing1, thing2, author Urn) bool {
 	}
 	rm.Lock()
 	defer rm.Unlock()
-	relations = append(relations, relation{Thing1: thing1, Thing2: thing2})
+	relations = append(relations, relation{Created: "2024-02-02", Thing1: thing1, Thing2: thing2})
 	return true
 }
 

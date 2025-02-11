@@ -13,7 +13,7 @@ var (
 	rsm         sync.Mutex
 	version     = 1
 	resolutions = []resolution{
-		{Id: thing{Name: "test"}, Thing: "test-thing", Reference: "test-ref", Version: 1},
+		{Id: thing{Name: "urn:agent:resolution/test-thing", Cn: "cn"}, Thing: "urn:agent:thing/test-thing", Reference: "test-ref", Version: 1},
 	}
 )
 
