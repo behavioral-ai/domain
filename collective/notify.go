@@ -34,30 +34,13 @@ func getNotification(thing Urn) []Notify {
 	return nil
 }
 
-/*
-	func removeNotification(thing Urn) *aspect.Status {
-		if thing == "" {
-			return aspect.StatusBadRequest()
-		}
-		_, ok := notifications[thing]
-		if !ok {
-			return aspect.StatusOK()
-		}
-		notifications[thing] = nil
-		return aspect.StatusOK()
-	}
-*/
 func sendNotification(thing, event Urn) *aspect.Status {
 	if thing == "" || event == "" {
 		return aspect.StatusBadRequest()
 	}
-	value, ok := notifications.Load(thing)
-	if ok {
-		if list, ok1 := value.([]Notify); ok1 {
-			for _, fn := range list {
-				fn(thing, event)
-			}
-		}
+	list := getNotification(thing)
+	for _, fn := range list {
+		fn(thing, event)
 	}
 	return aspect.StatusOK()
 }
