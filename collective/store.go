@@ -9,12 +9,14 @@ import (
 	"sync"
 )
 
+// TODO: need to determine date driven partitioning scheme. Entries work like transactions with no updates or
+//
+//	deletions, only appending
 type entry struct {
 	Name      Urn `json:"name"` // Uuid
 	CreatedTS string
-	//Partition string
-	Content []byte
-	Version int
+	Content   []byte
+	Version   int
 }
 
 type host struct {
