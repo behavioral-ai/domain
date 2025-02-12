@@ -12,12 +12,3 @@ func ExampleThingAppend() {
 	//Output:
 	//fail
 }
-
-func _ExampleThingAppendWithUri() {
-	ok := thingAppend("agent:thing/four", "cn2")
-	fmt.Printf("test: ThingAppend() -> [ok:%v] [%v]\n", ok, things)
-	fmt.Printf("test: ResolutionAppend() -> [ok:%v] [%v]\n", ok, resolutions)
-
-	//Output:
-	//fail
-}

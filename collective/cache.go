@@ -14,15 +14,11 @@ var (
 )
 
 func newCache() *content {
-	cache = new(content)
-	cache.m = new(sync.Map)
-	return cache
+	c := new(content)
+	c.m = new(sync.Map)
+	return c
 }
 
 func (c *content) get(name Urn, version int) ([]byte, *aspect.Status) {
-	return nil, nil
-}
-
-func (c *content) getRelated(thing1, thing2 Urn, version int) ([]byte, *aspect.Status) {
 	return nil, nil
 }

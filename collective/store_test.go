@@ -1,25 +1,17 @@
 package collective
 
-import "fmt"
+import (
+	"github.com/behavioral-ai/domain/common"
+)
 
-func _ExampleStore() {
-	ok := resolutionAppend("agent:thing/assignment/host", ResourceUri)
-	fmt.Printf("test: ResolutionAppend() -> [ok:%v] [%v]\n", ok, resolutions)
-
-	//Output:
-	//fail
+type host struct {
+	EntryId int           `json:"entry-id"`
+	Created Timestamp     `json:"created-ts"`
+	Origin  common.Origin `json:"origin"`
 }
 
-func ExamplePartition() {
-	u := "agent:thing/assignment/host"
-	p := partition(Urn(u))
-	fmt.Printf("test: partition() -> [%v] [%v]\n", u, p)
-
-	u = "agent:thing/assignment/host#partition-1"
-	p = partition(Urn(u))
-	fmt.Printf("test: partition() -> [%v] [%v]\n", u, p)
+func _ExampleStore() {
 
 	//Output:
 	//fail
-
 }

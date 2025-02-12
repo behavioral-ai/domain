@@ -2,64 +2,38 @@ package collective
 
 import (
 	"github.com/behavioral-ai/core/aspect"
-	"github.com/behavioral-ai/domain/common"
-	"net/url"
-	"strconv"
-	"strings"
 	"sync"
 )
 
-// TODO: need to determine date driven partitioning scheme. Entries work like transactions with no updates or
+// TODO: need to determine a partitioning scheme. Entries work like transactions with no updates or
 //
 //	deletions, only appending
 type entry struct {
-	Name      Urn `json:"name"` // Uuid
-	CreatedTS string
-	Content   []byte
-	Version   int
-}
-
-type host struct {
-	EntryId int           `json:"entry-id"`
-	Created Timestamp     `json:"created-ts"`
-	Origin  common.Origin `json:"origin"`
+	Name      Urn    `json:"name"`    // Uuid
+	Version   int    `json:"version"` // Semantic versioning MAJOR component only
+	Content   []byte `json:"content"`
+	CreatedTS string `json:"created-ts"`
 }
 
 var (
-	storeVersion = 0
-	sm           sync.Mutex
-	store        []entry
+	sm    sync.Mutex
+	store []entry
 )
 
-func newVersion(fragment string) string {
-	version++
-	v := strconv.Itoa(version)
-	if fragment == "" {
-		return v
-	}
-	return fragment + ":" + v
-}
-
-func partition(name Urn) string {
-	i := strings.Index(string(name), "#")
-	if i >= 0 {
-		return string(name)[i+1:]
-	}
-	return ""
-}
-
-func put(name Urn, body []byte) *aspect.Status {
+func get(name Urn, version int) ([]byte, *aspect.Status) {
 	sm.Lock()
 	defer sm.Unlock()
-	version++
-	store = append(store, entry{Name: name, Content: body, Version: version})
-	return aspect.StatusOK()
-}
-
-func get(name Urn, values url.Values, fragment string) (body []byte, status *aspect.Status) {
-
-	sm.Lock()
-	defer sm.Unlock()
-
+	for _, item := range store {
+		if item.Name == name && item.Version == version {
+			return item.Content, aspect.StatusOK()
+		}
+	}
 	return nil, aspect.StatusOK()
+}
+
+func put(name Urn, body []byte, version int) *aspect.Status {
+	sm.Lock()
+	defer sm.Unlock()
+	store = append(store, entry{Name: name, Content: body, Version: version, CreatedTS: "2024-02-12"})
+	return aspect.StatusOK()
 }
