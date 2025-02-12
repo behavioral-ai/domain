@@ -34,6 +34,7 @@ func _ExampleThreshold() {
 
 }
 
+/*
 func ExampleResolutionUrn() {
 	in := "thing:/test/resource/name"
 	urn := ResolutionUrn(Urn(in))
@@ -44,3 +45,6 @@ func ExampleResolutionUrn() {
 	//test: ResolutionUrn() -> [thing:/test/resource/name] [resolution:/test/resource/name]
 
 }
+
+
+*/

@@ -6,23 +6,17 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 const (
-	CollectiveUrn = "urn:collective"
-	AnonymousName = "author:anonymous"
+	ResourceUri = "urn:collective"
 
 	AgentNID     = "agent" // Restricted NID/Domain
 	EventNID     = "event"
 	EventChanged = "event:changed"
 
-	ThingNSS    = "thing"    // urn:{NID}:thing:{module-package}:{type}
-	AuthorNSS   = "author"   // urn:{NID}:author:testing-aspect
-	RuleNSS     = "rule"     // urn:{NID}:rule:testing-rule
-	GuidanceNSS = "guidance" // urn:{NID}:guidance:testing-rule
-
-	ResolutionNSS = "resolution" // urn:{NID}:resolution:testing-frame
+	ThingNSS  = "thing"  // urn:{NID}:thing:{module-package}:{type}
+	AspectNSS = "aspect" // urn:{NID}:aspect:{path}
 
 )
 
@@ -32,12 +26,6 @@ type Uri string
 // Urn
 // Applications can create as many domains/NISD as needed
 // "agent" is the reserved domain for the agent collective supporting agent development
-
-// ResolutionUrn - create resolution Urn
-func ResolutionUrn(name Urn) Urn {
-	return Urn(strings.Replace(string(name), ThingNSS, ResolutionNSS, 1))
-
-}
 
 // IAppend - append
 type IAppend struct {
@@ -73,10 +61,6 @@ var Append = func() *IAppend {
 	}
 }()
 
-type Where struct {
-	Partition, Version string
-}
-
 // IResolver - resolution
 type IResolver struct {
 	Get        func(ctx context.Context, name Urn, version int) (body []byte, status *aspect.Status)
@@ -110,3 +94,17 @@ type Notify func(thing, event Urn)
 func AddNotification(thing Urn, fn Notify) *aspect.Status {
 	return addNotification(thing, fn)
 }
+
+// ResolutionUrn - create resolution Urn
+/*
+//ResolutionNSS = "resolution" // urn:{NID}:resolution:testing-frame
+func ResolutionUrn(name Urn) Urn {
+	return Urn(strings.Replace(string(name), ThingNSS, ResolutionNSS, 1))
+
+}
+
+type Where struct {
+	Partition, Version string
+}
+
+*/

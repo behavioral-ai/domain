@@ -3,10 +3,10 @@ package collective
 import "sync"
 
 type resolution struct {
-	Id        thing `json:"id"` // Urn created automatically by replacing thing NSS with "resolution"
-	Thing     Urn   `json:"thing"`
-	Reference Uri   `json:"reference"`
-	Version   int   `json:"version"` // System generated auto incrementing version
+	Id thing `json:"id"` // Urn of related thing
+	//Thing     Urn   `json:"thing"`
+	Reference Uri `json:"reference"`
+	Version   int `json:"version"` // System generated auto incrementing version
 }
 
 var (
@@ -16,14 +16,14 @@ var (
 )
 
 func resolutionAppend(thing1 Urn, ref Uri) bool {
-	name := ResolutionUrn(thing1)
-	if resolutionExists(name) {
+	//name := ResolutionUrn(thing1)
+	if resolutionExists(thing1) {
 		return false
 	}
 	rsm.Lock()
 	defer rsm.Unlock()
 	version++
-	resolutions = append(resolutions, resolution{Id: thing{Name: name}, Thing: thing1, Reference: ref, Version: version})
+	resolutions = append(resolutions, resolution{Id: thing{Name: thing1}, Reference: ref, Version: version})
 	return true
 }
 

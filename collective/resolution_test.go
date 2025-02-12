@@ -3,7 +3,7 @@ package collective
 import "fmt"
 
 func ExampleResolutionAppend() {
-	ok := resolutionAppend("agent:thing/resource", CollectiveUrn)
+	ok := resolutionAppend("agent:thing/resource", ResourceUri)
 	fmt.Printf("test: ResolutionAppend() -> [ok:%v] [%v]\n", ok, resolutions)
 
 	/*

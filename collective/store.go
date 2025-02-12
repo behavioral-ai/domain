@@ -11,9 +11,10 @@ import (
 
 type entry struct {
 	Name      Urn `json:"name"` // Uuid
-	Partition string
-	Content   []byte
-	Version   int
+	CreatedTS string
+	//Partition string
+	Content []byte
+	Version int
 }
 
 type host struct {
@@ -49,7 +50,7 @@ func put(name Urn, body []byte) *aspect.Status {
 	sm.Lock()
 	defer sm.Unlock()
 	version++
-	store = append(store, entry{Name: name, Partition: partition(name), Content: body, Version: version})
+	store = append(store, entry{Name: name, Content: body, Version: version})
 	return aspect.StatusOK()
 }
 
