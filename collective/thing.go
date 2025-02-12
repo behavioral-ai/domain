@@ -16,7 +16,7 @@ var (
 	things []thing
 )
 
-func thingAppend(name, author Urn, cn string) bool {
+func thingAppend(name Urn, cn string) bool {
 	if thingExists(name) {
 		return false
 	}

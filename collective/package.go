@@ -41,30 +41,30 @@ func ResolutionUrn(name Urn) Urn {
 
 // IAppend - append
 type IAppend struct {
-	Thing      func(ctx context.Context, name, author Urn, cn string) *aspect.Status
-	Relation   func(ctx context.Context, thing1, thing2, author Urn) *aspect.Status
-	Resolution func(ctx context.Context, thing, author Urn, ref Uri) *aspect.Status
+	Thing      func(ctx context.Context, name Urn, cn string) *aspect.Status
+	Relation   func(ctx context.Context, thing1, thing2 Urn) *aspect.Status
+	Resolution func(ctx context.Context, thing Urn, ref Uri) *aspect.Status
 }
 
 // Append -
 var Append = func() *IAppend {
 	return &IAppend{
-		Thing: func(ctx context.Context, name, author Urn, cn string) *aspect.Status {
-			ok := thingAppend(name, author, cn)
+		Thing: func(ctx context.Context, name Urn, cn string) *aspect.Status {
+			ok := thingAppend(name, cn)
 			if !ok {
 				return aspect.StatusBadRequest()
 			}
 			return aspect.StatusOK()
 		},
-		Relation: func(ctx context.Context, thing1, thing2, author Urn) *aspect.Status {
-			ok := relationAppend(thing1, thing2, author)
+		Relation: func(ctx context.Context, thing1, thing2 Urn) *aspect.Status {
+			ok := relationAppend(thing1, thing2)
 			if !ok {
 				return aspect.StatusBadRequest()
 			}
 			return aspect.StatusOK()
 		},
-		Resolution: func(ctx context.Context, thing, author Urn, ref Uri) *aspect.Status {
-			ok := resolutionAppend(thing, author, ref)
+		Resolution: func(ctx context.Context, thing Urn, ref Uri) *aspect.Status {
+			ok := resolutionAppend(thing, ref)
 			if !ok {
 				return aspect.StatusBadRequest()
 			}

@@ -15,7 +15,7 @@ var (
 	resolutions []resolution
 )
 
-func resolutionAppend(thing1, author Urn, ref Uri) bool {
+func resolutionAppend(thing1 Urn, ref Uri) bool {
 	name := ResolutionUrn(thing1)
 	if resolutionExists(name) {
 		return false

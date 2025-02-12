@@ -13,7 +13,7 @@ var (
 	relations []relation
 )
 
-func relationAppend(thing1, thing2, author Urn) bool {
+func relationAppend(thing1, thing2 Urn) bool {
 	if relationExists(thing1, thing2) {
 		return false
 	}
