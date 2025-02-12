@@ -16,16 +16,13 @@ var (
 	things []thing
 )
 
-func thingAppend(name, author Urn, cn string, ref Uri) bool {
+func thingAppend(name, author Urn, cn string) bool {
 	if thingExists(name) {
 		return false
 	}
 	tm.Lock()
 	defer tm.Unlock()
 	things = append(things, thing{Name: name, Cn: cn, Created: "2024-02-11"})
-	if ref != "" {
-		return resolutionAppend(name, author, ref)
-	}
 	return true
 }
 
