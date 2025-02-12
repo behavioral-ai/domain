@@ -63,25 +63,25 @@ var Append = func() *IAppend {
 
 // IResolver - resolution
 type IResolver struct {
-	Get        func(ctx context.Context, name Urn, version int) (body []byte, status *aspect.Status)
-	GetRelated func(ctx context.Context, thing1, thing2 Urn, version int) (body []byte, status *aspect.Status)
-	Put        func(ctx context.Context, name Urn, body []byte) (status *aspect.Status)
-	Request    func(ctx context.Context, name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status)
+	Get        func(name Urn, version int) (body []byte, status *aspect.Status)
+	GetRelated func(thing1, thing2 Urn, version int) (body []byte, status *aspect.Status)
+	Put        func(name Urn, body []byte) (status *aspect.Status)
+	Request    func(name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status)
 }
 
 // Resolver -
 var Resolver = func() *IResolver {
 	return &IResolver{
-		Get: func(ctx context.Context, name Urn, version int) (body []byte, status *aspect.Status) {
+		Get: func(name Urn, version int) (body []byte, status *aspect.Status) {
 			return nil, nil
 		},
-		GetRelated: func(ctx context.Context, thing1, thing2 Urn, version int) (body []byte, status *aspect.Status) {
+		GetRelated: func(thing1, thing2 Urn, version int) (body []byte, status *aspect.Status) {
 			return nil, nil
 		},
-		Put: func(ctx context.Context, name Urn, body []byte) *aspect.Status {
+		Put: func(name Urn, body []byte) *aspect.Status {
 			return nil
 		},
-		Request: func(ctx context.Context, name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status) {
+		Request: func(name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status) {
 			return nil, nil
 		},
 	}
