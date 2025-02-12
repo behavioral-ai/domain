@@ -1,11 +1,8 @@
 package collective
 
 import (
-	"context"
 	"github.com/behavioral-ai/core/aspect"
-	"io"
-	"net/http"
-	"net/url"
+	"github.com/behavioral-ai/core/jsonx"
 )
 
 const (
@@ -29,30 +26,22 @@ type Uri string
 
 // IAppend - append
 type IAppend struct {
-	Thing      func(ctx context.Context, name Urn, cn string) *aspect.Status
-	Relation   func(ctx context.Context, thing1, thing2 Urn) *aspect.Status
-	Resolution func(ctx context.Context, thing Urn, ref Uri) *aspect.Status
+	Thing    func(name Urn, cn string) *aspect.Status
+	Relation func(thing1, thing2 Urn) *aspect.Status
 }
 
 // Append -
 var Append = func() *IAppend {
 	return &IAppend{
-		Thing: func(ctx context.Context, name Urn, cn string) *aspect.Status {
+		Thing: func(name Urn, cn string) *aspect.Status {
 			ok := thingAppend(name, cn)
 			if !ok {
 				return aspect.StatusBadRequest()
 			}
 			return aspect.StatusOK()
 		},
-		Relation: func(ctx context.Context, thing1, thing2 Urn) *aspect.Status {
+		Relation: func(thing1, thing2 Urn) *aspect.Status {
 			ok := relationAppend(thing1, thing2)
-			if !ok {
-				return aspect.StatusBadRequest()
-			}
-			return aspect.StatusOK()
-		},
-		Resolution: func(ctx context.Context, thing Urn, ref Uri) *aspect.Status {
-			ok := resolutionAppend(thing, ref)
 			if !ok {
 				return aspect.StatusBadRequest()
 			}
@@ -63,29 +52,34 @@ var Append = func() *IAppend {
 
 // IResolver - resolution
 type IResolver struct {
-	Get        func(name Urn, version int) (body []byte, status *aspect.Status)
-	GetRelated func(thing1, thing2 Urn, version int) (body []byte, status *aspect.Status)
-	Put        func(name Urn, body []byte) (status *aspect.Status)
-	Request    func(name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status)
+	Get        func(name Urn, version int) ([]byte, *aspect.Status)
+	GetRelated func(name Urn, version int) ([]byte, *aspect.Status)
+	Append     func(name Urn, body []byte) *aspect.Status
 }
 
 // Resolver -
 var Resolver = func() *IResolver {
 	return &IResolver{
-		Get: func(name Urn, version int) (body []byte, status *aspect.Status) {
+		Get: func(name Urn, version int) ([]byte, *aspect.Status) {
 			return nil, nil
 		},
-		GetRelated: func(thing1, thing2 Urn, version int) (body []byte, status *aspect.Status) {
+		GetRelated: func(name Urn, version int) ([]byte, *aspect.Status) {
 			return nil, nil
 		},
-		Put: func(name Urn, body []byte) *aspect.Status {
+		Append: func(name Urn, body []byte) *aspect.Status {
 			return nil
-		},
-		Request: func(name Urn, method string, headers http.Header, body io.Reader, values url.Values, fragment string) (resp *http.Response, status *aspect.Status) {
-			return nil, nil
 		},
 	}
 }()
+
+func Get[T any](name Urn, version int) (T, *aspect.Status) {
+	var t T
+	body, status := Resolver.Get(name, version)
+	if !status.OK() {
+		return t, status
+	}
+	return jsonx.New[T](body, nil)
+}
 
 // Notify - notification function
 type Notify func(thing, event Urn)
