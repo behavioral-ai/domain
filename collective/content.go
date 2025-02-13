@@ -21,10 +21,6 @@ type contentT struct {
 	resolve contentResolver
 }
 
-var (
-	contentCache = newContentCache(get)
-)
-
 func newContentCache(r contentResolver) *contentT {
 	c := new(contentT)
 	c.m = new(sync.Map)

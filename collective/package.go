@@ -2,7 +2,10 @@ package collective
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/behavioral-ai/core/aspect"
+	"github.com/behavioral-ai/core/messaging"
+	"net/http"
 )
 
 const (
@@ -17,6 +20,28 @@ const (
 
 type Urn string
 type Uri string
+type HttpExchange func(r *http.Request) (*http.Response, error)
+
+var (
+	do = func(r *http.Request) (*http.Response, error) {
+		return nil, errors.New("error: Collective HttpExchange function has not be initialized")
+	}
+)
+
+// Initialize - collective initialize, hosts are service hosts for cloud collective
+// TODO: configure content resolver
+func Initialize(ex HttpExchange, handler messaging.OpsAgent, hosts []string) *aspect.Status {
+	if ex == nil || handler == nil {
+		return aspect.StatusBadRequest()
+	}
+	initialize(ex, handler, httpResolver, hosts)
+	return aspect.StatusOK()
+}
+
+func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, hosts []string) {
+	do = ex
+	newContentAgent(handler, r)
+}
 
 // Urn
 // Applications can create as many domains/NISD as needed
@@ -59,14 +84,14 @@ type IResolver struct {
 var Resolver = func() *IResolver {
 	return &IResolver{
 		Get: func(name Urn, version int) ([]byte, *aspect.Status) {
-			return contentCache.get(name, version)
+			return contentAgent.get(name, version)
 		},
 		GetRelated: func(name Urn, version int) ([]byte, *aspect.Status) {
 			rel, status := relationCache.get(name)
 			if !status.OK() {
 				return nil, status
 			}
-			return contentCache.get(rel.Thing2, version)
+			return contentAgent.get(rel.Thing2, version)
 		},
 		Append: func(name Urn, body []byte, version int) *aspect.Status {
 			return storeAppend(name, body, version)
@@ -98,26 +123,3 @@ func GetRelated[T any](name Urn, version int) (T, *aspect.Status) {
 	}
 	return Get[T](rel.Thing2, version)
 }
-
-/*
-// Notify - notification function
-type Notify func(thing, event Urn)
-
-// AddNotification - create a notification
-func AddNotification(thing Urn, fn Notify) *aspect.Status {
-	return addNotification(thing, fn)
-}
-
-// ResolutionUrn - create resolution Urn
-
-//ResolutionNSS = "resolution" // urn:{NID}:resolution:testing-frame
-func ResolutionUrn(name Urn) Urn {
-	return Urn(strings.Replace(string(name), ThingNSS, ResolutionNSS, 1))
-
-}
-
-type Where struct {
-	Partition, Version string
-}
-
-*/
