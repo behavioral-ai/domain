@@ -1,7 +1,8 @@
 package collective
 
 import (
-	"github.com/behavioral-ai/core/aspect"
+	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -20,15 +21,15 @@ var (
 	store []entry
 )
 
-func storeGet(name Urn, version int) ([]byte, *aspect.Status) {
+func storeGet(name Urn, version int) ([]byte, error) {
 	sm.Lock()
 	defer sm.Unlock()
 	for _, item := range store {
 		if item.Name == name && item.Version == version {
-			return item.Content, aspect.StatusOK()
+			return item.Content, nil
 		}
 	}
-	return nil, aspect.StatusOK()
+	return nil, errors.New(fmt.Sprintf("error: name %v not found", name))
 }
 
 func storeExists(name Urn, version int) bool {
@@ -42,12 +43,12 @@ func storeExists(name Urn, version int) bool {
 	return false
 }
 
-func storeAppend(name Urn, body []byte, version int) *aspect.Status {
+func storeAppend(name Urn, body []byte, version int) error {
 	if storeExists(name, version) {
-		return aspect.StatusBadRequest()
+		return errors.New("error: bad request")
 	}
 	sm.Lock()
 	defer sm.Unlock()
 	store = append(store, entry{Name: name, Content: body, Version: version, CreatedTS: "2024-02-12"})
-	return aspect.StatusOK()
+	return nil
 }

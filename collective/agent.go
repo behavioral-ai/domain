@@ -1,7 +1,6 @@
 package collective
 
 import (
-	"github.com/behavioral-ai/core/aspect"
 	"github.com/behavioral-ai/core/messaging"
 	"time"
 )
@@ -94,9 +93,9 @@ func (s *agentT) IsFinalized() bool {
 	return true
 }
 
-func (s *agentT) get(name Urn, version int) ([]byte, *aspect.Status) {
+func (s *agentT) get(name Urn, version int) ([]byte, error) {
 	body, status := s.cache.get(name, version)
-	if !status.OK() {
+	if status != nil {
 		s.handler.Notify(status)
 	}
 	return body, status

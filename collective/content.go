@@ -1,11 +1,10 @@
 package collective
 
 import (
-	"github.com/behavioral-ai/core/aspect"
 	"sync"
 )
 
-type contentResolver func(name Urn, version int) ([]byte, *aspect.Status)
+type contentResolver func(name Urn, version int) ([]byte, error)
 
 type content struct {
 	body []byte
@@ -28,19 +27,19 @@ func newContentCache(r contentResolver) *contentT {
 	return c
 }
 
-func (c *contentT) get(name Urn, version int) ([]byte, *aspect.Status) {
+func (c *contentT) get(name Urn, version int) ([]byte, error) {
 	key := contentKey{name: name, version: version}
 	value, ok := c.m.Load(key)
 	if !ok {
 		body, status := c.resolve(name, version)
-		if !status.OK() {
+		if status != nil {
 			return nil, status
 		}
 		c.m.Store(key, content{body: body})
-		return body, aspect.StatusOK()
+		return body, nil
 	}
 	if value1, ok1 := value.(content); ok1 {
-		return value1.body, aspect.StatusOK()
+		return value1.body, nil
 	}
-	return nil, aspect.StatusOK()
+	return nil, nil
 }

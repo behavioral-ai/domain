@@ -3,7 +3,7 @@ package collective
 import (
 	"encoding/json"
 	"errors"
-	"github.com/behavioral-ai/core/aspect"
+	"fmt"
 	"github.com/behavioral-ai/core/messaging"
 	"net/http"
 )
@@ -30,12 +30,12 @@ var (
 
 // Initialize - collective initialize, hosts are service hosts for cloud collective
 // TODO: configure content resolver
-func Initialize(ex HttpExchange, handler messaging.OpsAgent, hosts []string) *aspect.Status {
+func Initialize(ex HttpExchange, handler messaging.OpsAgent, hosts []string) error {
 	if ex == nil || handler == nil {
-		return aspect.StatusBadRequest()
+		return errors.New("error: bad request, exchange or handler is nil")
 	}
 	initialize(ex, handler, httpResolver, hosts)
-	return aspect.StatusOK()
+	return nil
 }
 
 func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, hosts []string) {
@@ -49,76 +49,76 @@ func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, 
 
 // IAppend - append
 type IAppend struct {
-	Thing    func(name Urn, cn string) *aspect.Status
-	Relation func(thing1, thing2 Urn) *aspect.Status
+	Thing    func(name Urn, cn string) error
+	Relation func(thing1, thing2 Urn) error
 }
 
 // Append -
 var Append = func() *IAppend {
 	return &IAppend{
-		Thing: func(name Urn, cn string) *aspect.Status {
+		Thing: func(name Urn, cn string) error {
 			ok := thingAppend(name, cn)
 			if !ok {
-				return aspect.StatusBadRequest()
+				return errors.New("error: bad request")
 			}
-			return aspect.StatusOK()
+			return nil
 		},
-		Relation: func(thing1, thing2 Urn) *aspect.Status {
+		Relation: func(thing1, thing2 Urn) error {
 			ok := relationAppend(thing1, thing2)
 			if !ok {
-				return aspect.StatusBadRequest()
+				return errors.New("error: bad request")
 			}
-			return aspect.StatusOK()
+			return nil
 		},
 	}
 }()
 
 // IResolver - resolution
 type IResolver struct {
-	Get        func(name Urn, version int) ([]byte, *aspect.Status)
-	GetRelated func(name Urn, version int) ([]byte, *aspect.Status)
-	Append     func(name Urn, body []byte, version int) *aspect.Status
+	Get        func(name Urn, version int) ([]byte, error)
+	GetRelated func(name Urn, version int) ([]byte, error)
+	Append     func(name Urn, body []byte, version int) error
 }
 
 // Resolver -
 var Resolver = func() *IResolver {
 	return &IResolver{
-		Get: func(name Urn, version int) ([]byte, *aspect.Status) {
+		Get: func(name Urn, version int) ([]byte, error) {
 			return contentAgent.get(name, version)
 		},
-		GetRelated: func(name Urn, version int) ([]byte, *aspect.Status) {
+		GetRelated: func(name Urn, version int) ([]byte, error) {
 			rel, status := relationCache.get(name)
-			if !status.OK() {
+			if status != nil {
 				return nil, status
 			}
 			return contentAgent.get(rel.Thing2, version)
 		},
-		Append: func(name Urn, body []byte, version int) *aspect.Status {
+		Append: func(name Urn, body []byte, version int) error {
 			return storeAppend(name, body, version)
 		},
 	}
 }()
 
 // Get - generic typed get
-func Get[T any](name Urn, version int) (T, *aspect.Status) {
+func Get[T any](name Urn, version int) (T, error) {
 	var t T
 	body, status := Resolver.Get(name, version)
-	if !status.OK() {
+	if status != nil {
 		return t, status
 	}
 	err := json.Unmarshal(body, &t)
 	if err != nil {
-		return t, aspect.NewStatusError(aspect.StatusJsonEncodeError, err)
+		return t, errors.New(fmt.Sprintf("error: JsonEncode %v", err))
 	}
-	return t, aspect.StatusOK()
+	return t, nil
 }
 
 // GetRelated - generic typed get
-func GetRelated[T any](name Urn, version int) (T, *aspect.Status) {
+func GetRelated[T any](name Urn, version int) (T, error) {
 	var t T
 
 	rel, status := relationCache.get(name)
-	if !status.OK() {
+	if status != nil {
 		return t, status
 	}
 	return Get[T](rel.Thing2, version)

@@ -14,7 +14,7 @@ func NewProcessingCalendar() *ProcessingCalendar {
 }
 
 func GetCalendar(h messaging.Notifier, agentId string, msg *messaging.Message) *ProcessingCalendar {
-	if !msg.IsContentType(ContentTypeCalendar) {
+	if msg.ContentType() != ContentTypeCalendar {
 		return nil
 	}
 	if p, ok := msg.Body.(*ProcessingCalendar); ok {

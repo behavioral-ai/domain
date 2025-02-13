@@ -1,7 +1,6 @@
 package guidance
 
 import (
-	"github.com/behavioral-ai/core/aspect"
 	"github.com/behavioral-ai/domain/common"
 )
 
@@ -20,12 +19,12 @@ const (
 	EastZoneB  = "e-b"
 )
 
-func GetRegion(origin common.Origin) ([]HostEntry, *aspect.Status) {
+func GetRegion(origin common.Origin) ([]HostEntry, error) {
 	if origin.Region == WestRegion {
-		return westData, aspect.StatusOK()
+		return westData, nil
 	}
 	if origin.Region == CentralRegion {
-		return centralData, aspect.StatusOK()
+		return centralData, nil
 	}
-	return []HostEntry{}, aspect.StatusNotFound()
+	return []HostEntry{}, nil
 }

@@ -1,7 +1,8 @@
 package collective
 
 import (
-	"github.com/behavioral-ai/core/aspect"
+	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -37,18 +38,18 @@ func relationExists(thing1, thing2 Urn) bool {
 	return false
 }
 
-func relationGet(name Urn) (relation, *aspect.Status) {
+func relationGet(name Urn) (relation, error) {
 	tm.Lock()
 	defer tm.Unlock()
 	for _, item := range relations {
 		if item.Thing1 == name {
-			return item, aspect.StatusOK()
+			return item, nil
 		}
 	}
-	return relation{}, aspect.StatusNotFound()
+	return relation{}, errors.New(fmt.Sprintf("error: name %v not found", name))
 }
 
-type relationResolver func(name Urn) (relation, *aspect.Status)
+type relationResolver func(name Urn) (relation, error)
 
 type relationT struct {
 	m       *sync.Map
@@ -66,18 +67,18 @@ func newRelationCache(r relationResolver) *relationT {
 	return t
 }
 
-func (r *relationT) get(name Urn) (relation, *aspect.Status) {
+func (r *relationT) get(name Urn) (relation, error) {
 	value, ok := r.m.Load(name)
 	if !ok {
 		rel, status := r.resolve(name)
-		if !status.OK() {
+		if status != nil {
 			return relation{}, status
 		}
 		r.m.Store(name, rel)
-		return rel, aspect.StatusOK()
+		return rel, nil
 	}
 	if value1, ok1 := value.(relation); ok1 {
-		return value1, aspect.StatusOK()
+		return value1, nil
 	}
 	return relation{}, nil
 }

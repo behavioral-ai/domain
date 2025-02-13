@@ -28,9 +28,9 @@ func emissaryAttend(agent *agentT) {
 			case messaging.ShutdownEvent:
 				ticker.Stop()
 				return
-			case messaging.DataChangeEvent:
+			//case messaging.DataChangeEvent:
 			default:
-				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
+				agent.handler.Notify(messaging.EventError(agent.Uri(), msg))
 			}
 		default:
 		}
