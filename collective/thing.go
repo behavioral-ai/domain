@@ -1,6 +1,8 @@
 package collective
 
-import "sync"
+import (
+	"sync"
+)
 
 type Timestamp string // Comparison of timestamps must support a temporal ordering
 

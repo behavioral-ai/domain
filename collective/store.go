@@ -20,7 +20,7 @@ var (
 	store []entry
 )
 
-func get(name Urn, version int) ([]byte, *aspect.Status) {
+func storeGet(name Urn, version int) ([]byte, *aspect.Status) {
 	sm.Lock()
 	defer sm.Unlock()
 	for _, item := range store {
@@ -31,7 +31,21 @@ func get(name Urn, version int) ([]byte, *aspect.Status) {
 	return nil, aspect.StatusOK()
 }
 
-func put(name Urn, body []byte, version int) *aspect.Status {
+func storeExists(name Urn, version int) bool {
+	sm.Lock()
+	defer sm.Unlock()
+	for _, item := range store {
+		if item.Name == name && item.Version == version {
+			return true
+		}
+	}
+	return false
+}
+
+func storeAppend(name Urn, body []byte, version int) *aspect.Status {
+	if storeExists(name, version) {
+		return aspect.StatusBadRequest()
+	}
 	sm.Lock()
 	defer sm.Unlock()
 	store = append(store, entry{Name: name, Content: body, Version: version, CreatedTS: "2024-02-12"})

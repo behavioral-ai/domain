@@ -1,8 +1,8 @@
 package collective
 
 import (
+	"encoding/json"
 	"github.com/behavioral-ai/core/aspect"
-	"github.com/behavioral-ai/core/jsonx"
 )
 
 const (
@@ -52,28 +52,24 @@ var Append = func() *IAppend {
 type IResolver struct {
 	Get        func(name Urn, version int) ([]byte, *aspect.Status)
 	GetRelated func(name Urn, version int) ([]byte, *aspect.Status)
-	Put        func(name Urn, body []byte, version int) *aspect.Status
+	Append     func(name Urn, body []byte, version int) *aspect.Status
 }
 
 // Resolver -
 var Resolver = func() *IResolver {
 	return &IResolver{
 		Get: func(name Urn, version int) ([]byte, *aspect.Status) {
-			return cache.get(name, version)
+			return contentCache.get(name, version)
 		},
 		GetRelated: func(name Urn, version int) ([]byte, *aspect.Status) {
-			buf, status := cache.get(name, version)
+			rel, status := relationCache.get(name)
 			if !status.OK() {
 				return nil, status
 			}
-			relation, status1 := jsonx.New[relation](buf, nil)
-			if !status1.OK() {
-				return nil, status1
-			}
-			return cache.get(relation.Thing2, version)
+			return contentCache.get(rel.Thing2, version)
 		},
-		Put: func(name Urn, body []byte, version int) *aspect.Status {
-			return put(name, body, version)
+		Append: func(name Urn, body []byte, version int) *aspect.Status {
+			return storeAppend(name, body, version)
 		},
 	}
 }()
@@ -85,17 +81,22 @@ func Get[T any](name Urn, version int) (T, *aspect.Status) {
 	if !status.OK() {
 		return t, status
 	}
-	return jsonx.New[T](body, nil)
+	err := json.Unmarshal(body, &t)
+	if err != nil {
+		return t, aspect.NewStatusError(aspect.StatusJsonEncodeError, err)
+	}
+	return t, aspect.StatusOK()
 }
 
 // GetRelated - generic typed get
 func GetRelated[T any](name Urn, version int) (T, *aspect.Status) {
 	var t T
-	body, status := Resolver.GetRelated(name, version)
+
+	rel, status := relationCache.get(name)
 	if !status.OK() {
 		return t, status
 	}
-	return jsonx.New[T](body, nil)
+	return Get[T](rel.Thing2, version)
 }
 
 /*
