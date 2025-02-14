@@ -43,7 +43,6 @@ func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, 
 	newContentAgent(handler, r)
 }
 
-// Urn
 // Applications can create as many domains/NISD as needed
 // "agent" is the reserved domain for the agent collective supporting agent development
 

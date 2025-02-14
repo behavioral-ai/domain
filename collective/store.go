@@ -10,9 +10,7 @@ import (
 //"resiliency:thing/operative/agent/lookup/gradient"
 //"resiliency:thing/operative/agent/lookup/saturation"
 
-// TODO: need to determine a partitioning scheme. Entries work like transactions with no updates or
-//
-//	deletions, only appending
+// TODO: need to determine a partitioning scheme, append only
 type entry struct {
 	Name      string `json:"name"`    // Uuid
 	Version   int    `json:"version"` // Semantic versioning MAJOR component only
