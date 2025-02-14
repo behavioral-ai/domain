@@ -31,7 +31,6 @@ var (
 )
 
 // Initialize - collective initialize, hosts are service hosts for cloud collective
-// TODO: configure content resolver
 func Initialize(ex HttpExchange, handler messaging.OpsAgent, hosts []string) error {
 	if ex == nil || handler == nil {
 		return errors.New("error: bad request, exchange or handler is nil")
