@@ -8,6 +8,9 @@ import (
 	"net/http"
 )
 
+// Applications can create as many domains/NISD as needed
+// "agent" is the reserved domain for the agent collective supporting agent development
+
 const (
 	ResourceUri = "urn:collective"
 
@@ -18,8 +21,7 @@ const (
 
 )
 
-// type Urn string
-// type Uri string
+// HttpExchange - exchange type
 type HttpExchange func(r *http.Request) (*http.Response, error)
 
 var (
@@ -42,9 +44,6 @@ func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, 
 	do = ex
 	newContentAgent(handler, r)
 }
-
-// Applications can create as many domains/NISD as needed
-// "agent" is the reserved domain for the agent collective supporting agent development
 
 // IAppend - append
 type IAppend struct {
@@ -83,14 +82,14 @@ type IResolver struct {
 var Resolver = func() *IResolver {
 	return &IResolver{
 		Get: func(name string, version int) ([]byte, error) {
-			return contentAgent.get(name, version)
+			return contentAgent.resolve(name, version)
 		},
 		GetRelated: func(name string, version int) ([]byte, error) {
 			rel, status := relationCache.get(name)
 			if status != nil {
 				return nil, status
 			}
-			return contentAgent.get(rel.Thing2, version)
+			return contentAgent.resolve(rel.Thing2, version)
 		},
 		Append: func(name string, body []byte, version int) error {
 			return storeAppend(name, body, version)

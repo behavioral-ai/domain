@@ -93,7 +93,7 @@ func (s *agentT) IsFinalized() bool {
 	return true
 }
 
-func (s *agentT) get(name string, version int) ([]byte, error) {
+func (s *agentT) resolve(name string, version int) ([]byte, error) {
 	body, status := s.cache.get(name, version)
 	if status != nil {
 		s.handler.Notify(status)
