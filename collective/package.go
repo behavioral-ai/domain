@@ -18,8 +18,8 @@ const (
 
 )
 
-type Urn string
-type Uri string
+// type Urn string
+// type Uri string
 type HttpExchange func(r *http.Request) (*http.Response, error)
 
 var (
@@ -49,21 +49,21 @@ func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, 
 
 // IAppend - append
 type IAppend struct {
-	Thing    func(name Urn, cn string) error
-	Relation func(thing1, thing2 Urn) error
+	Thing    func(name, cn string) error
+	Relation func(thing1, thing2 string) error
 }
 
 // Append -
 var Append = func() *IAppend {
 	return &IAppend{
-		Thing: func(name Urn, cn string) error {
+		Thing: func(name, cn string) error {
 			ok := thingAppend(name, cn)
 			if !ok {
 				return errors.New("error: bad request")
 			}
 			return nil
 		},
-		Relation: func(thing1, thing2 Urn) error {
+		Relation: func(thing1, thing2 string) error {
 			ok := relationAppend(thing1, thing2)
 			if !ok {
 				return errors.New("error: bad request")
@@ -75,32 +75,32 @@ var Append = func() *IAppend {
 
 // IResolver - resolution
 type IResolver struct {
-	Get        func(name Urn, version int) ([]byte, error)
-	GetRelated func(name Urn, version int) ([]byte, error)
-	Append     func(name Urn, body []byte, version int) error
+	Get        func(name string, version int) ([]byte, error)
+	GetRelated func(name string, version int) ([]byte, error)
+	Append     func(name string, body []byte, version int) error
 }
 
 // Resolver -
 var Resolver = func() *IResolver {
 	return &IResolver{
-		Get: func(name Urn, version int) ([]byte, error) {
+		Get: func(name string, version int) ([]byte, error) {
 			return contentAgent.get(name, version)
 		},
-		GetRelated: func(name Urn, version int) ([]byte, error) {
+		GetRelated: func(name string, version int) ([]byte, error) {
 			rel, status := relationCache.get(name)
 			if status != nil {
 				return nil, status
 			}
 			return contentAgent.get(rel.Thing2, version)
 		},
-		Append: func(name Urn, body []byte, version int) error {
+		Append: func(name string, body []byte, version int) error {
 			return storeAppend(name, body, version)
 		},
 	}
 }()
 
 // Get - generic typed get
-func Get[T any](name Urn, version int) (T, error) {
+func Get[T any](name string, version int) (T, error) {
 	var t T
 	body, status := Resolver.Get(name, version)
 	if status != nil {
@@ -114,7 +114,7 @@ func Get[T any](name Urn, version int) (T, error) {
 }
 
 // GetRelated - generic typed get
-func GetRelated[T any](name Urn, version int) (T, error) {
+func GetRelated[T any](name string, version int) (T, error) {
 	var t T
 
 	rel, status := relationCache.get(name)

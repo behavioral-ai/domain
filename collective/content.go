@@ -4,14 +4,14 @@ import (
 	"sync"
 )
 
-type contentResolver func(name Urn, version int) ([]byte, error)
+type contentResolver func(name string, version int) ([]byte, error)
 
 type content struct {
 	body []byte
 }
 
 type contentKey struct {
-	name    Urn
+	name    string
 	version int
 }
 
@@ -27,7 +27,7 @@ func newContentCache(r contentResolver) *contentT {
 	return c
 }
 
-func (c *contentT) get(name Urn, version int) ([]byte, error) {
+func (c *contentT) get(name string, version int) ([]byte, error) {
 	key := contentKey{name: name, version: version}
 	value, ok := c.m.Load(key)
 	if !ok {

@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-type relationResolver func(name Urn) (relation, error)
+type relationResolver func(name string) (relation, error)
 
 type relationT struct {
 	m       *sync.Map
@@ -22,7 +22,7 @@ func newRelationCache(r relationResolver) *relationT {
 	return t
 }
 
-func (r *relationT) get(name Urn) (relation, error) {
+func (r *relationT) get(name string) (relation, error) {
 	value, ok := r.m.Load(name)
 	if !ok {
 		rel, status := r.resolve(name)

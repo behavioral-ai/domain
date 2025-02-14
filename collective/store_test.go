@@ -6,9 +6,9 @@ import (
 )
 
 type host struct {
-	EntryId int           `json:"entry-id"`
-	Created Timestamp     `json:"created-ts"`
-	Origin  common.Origin `json:"origin"`
+	EntryId   int           `json:"entry-id"`
+	CreatedTS string        `json:"created-ts"`
+	Origin    common.Origin `json:"origin"`
 }
 
 func _ExampleStore() {
