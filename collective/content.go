@@ -4,8 +4,6 @@ import (
 	"sync"
 )
 
-type contentResolver func(name string, version int) ([]byte, error)
-
 type content struct {
 	body []byte
 }

@@ -4,8 +4,6 @@ import (
 	"sync"
 )
 
-type relationResolver func(name string) (relation, error)
-
 type relationT struct {
 	m       *sync.Map
 	resolve relationResolver
