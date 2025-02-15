@@ -74,7 +74,7 @@ var Append = func() *IAppend {
 type IResolver struct {
 	Get        func(name string, version int) ([]byte, error)
 	GetRelated func(name string, version int) ([]byte, error)
-	Append     func(name string, body []byte, version int) error
+	Append     func(name string, content any, version int) error
 }
 
 // Resolver -
@@ -90,8 +90,25 @@ var Resolver = func() *IResolver {
 			}
 			return contentAgent.resolve(rel.Thing2, version)
 		},
-		Append: func(name string, body []byte, version int) error {
-			return storeAppend(name, body, version)
+		Append: func(name string, content any, version int) error {
+			var buf []byte
+			if name == "" || content == nil || version <= 0 {
+				return errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version))
+			}
+			switch ptr := content.(type) {
+			case string:
+				buf = []byte(ptr)
+			case []byte:
+				buf = ptr
+			default:
+				var err error
+
+				buf, err = json.Marshal(ptr)
+				if err != nil {
+					return err
+				}
+			}
+			return storeAppend(name, buf, version)
 		},
 	}
 }()
