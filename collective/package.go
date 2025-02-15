@@ -116,13 +116,21 @@ var Resolver = func() *IResolver {
 // Get - generic typed get
 func Get[T any](name string, version int, resolver IResolver) (T, error) {
 	var t T
+
 	body, status := resolver.Get(name, version)
 	if status != nil {
 		return t, status
 	}
-	err := json.Unmarshal(body, &t)
-	if err != nil {
-		return t, errors.New(fmt.Sprintf("error: JsonEncode %v", err))
+	switch ptr := any(&t).(type) {
+	case *string:
+		*ptr = string(body)
+	case *[]byte:
+		*ptr = body
+	default:
+		err := json.Unmarshal(body, ptr)
+		if err != nil {
+			return t, errors.New(fmt.Sprintf("error: JsonEncode %v", err))
+		}
 	}
 	return t, nil
 }
