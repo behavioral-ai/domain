@@ -97,9 +97,9 @@ var Resolver = func() *IResolver {
 }()
 
 // Get - generic typed get
-func Get[T any](name string, version int) (T, error) {
+func Get[T any](name string, version int, resolver IResolver) (T, error) {
 	var t T
-	body, status := Resolver.Get(name, version)
+	body, status := resolver.Get(name, version)
 	if status != nil {
 		return t, status
 	}
@@ -111,12 +111,12 @@ func Get[T any](name string, version int) (T, error) {
 }
 
 // GetRelated - generic typed get
-func GetRelated[T any](name string, version int) (T, error) {
+func GetRelated[T any](name string, version int, resolver IResolver) (T, error) {
 	var t T
 
 	rel, status := relationCache.get(name)
 	if status != nil {
 		return t, status
 	}
-	return Get[T](rel.Thing2, version)
+	return Get[T](rel.Thing2, version, resolver)
 }

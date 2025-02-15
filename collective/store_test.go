@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func _ExampleRelationAppend() {
+func ExampleRelationAppend() {
 	ok := relationAppend("agent:aspect/test3", "agent:aspect/test4")
 	fmt.Printf("test: RelationAppend() -> [ok:%v] [%v]\n", ok, relations)
 
