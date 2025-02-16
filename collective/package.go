@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/behavioral-ai/core/messaging"
 	"net/http"
+	"strings"
 )
 
 // Applications can create as many domains/NISD as needed
@@ -21,38 +22,58 @@ const (
 
 )
 
-// HttpExchange - exchange type
-type HttpExchange func(r *http.Request) (*http.Response, error)
-
 var (
-	do = func(r *http.Request) (*http.Response, error) {
+	cache *contentT
+	do    = func(r *http.Request) (*http.Response, error) {
 		return nil, errors.New("error: Collective HttpExchange function has not be initialized")
 	}
 )
 
+// ResolutionKey -
+type ResolutionKey struct {
+	Name    string `json:"name"`
+	Version int    `json:"version"`
+}
+
+// HttpExchange - exchange type
+type HttpExchange func(r *http.Request) (*http.Response, error)
+
 // Initialize - collective initialize, hosts are service hosts for cloud collective
-func Initialize(ex HttpExchange, handler messaging.OpsAgent, hosts []string) error {
-	if ex == nil || handler == nil {
-		return errors.New("error: bad request, exchange or handler is nil")
+func Initialize(handler messaging.OpsAgent, ex HttpExchange, hosts []string) error {
+	if ex == nil || handler == nil || len(hosts) == 0 {
+		return errors.New("error: bad request, handler, exchange, or hosts are empty")
 	}
-	initialize(ex, handler, httpResolver, hosts)
-	return nil
+	return initialize(handler, ex, httpResolution, hosts)
 }
 
-func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, hosts []string) {
+func InitializeEphemeral(handler messaging.OpsAgent, dir string) error {
+	if handler == nil || dir == "" {
+		return errors.New("error: bad request, handler or dir is empty")
+	}
+	return initialize(handler, nil, fileResolution, []string{dir})
+}
+
+func initialize(handler messaging.OpsAgent, ex HttpExchange, r resolutionFunc, hosts []string) (err error) {
 	do = ex
-	newContentAgent(handler, r)
+	cache = newContentCache(r)
+	if !strings.HasPrefix(hosts[0], "http") {
+		err = cache.load(hosts[0])
+	}
+	if err != nil {
+		newContentAgent(handler, cache)
+	}
+	return
 }
 
-// Append - append
-type Append struct {
+// Appender - append
+type Appender struct {
 	Thing    func(name, cn string) error
 	Relation func(thing1, thing2 string) error
 }
 
-// Appender -
-var Appender = func() *Append {
-	return &Append{
+// Append -
+var Append = func() *Appender {
+	return &Appender{
 		Thing: func(name, cn string) error {
 			ok := thingAppend(name, cn)
 			if !ok {
@@ -70,15 +91,15 @@ var Appender = func() *Append {
 	}
 }()
 
-// Resolve - resolution
-type Resolve struct {
+// Resolution - resolution
+type Resolution struct {
 	Get func(name string, version int) ([]byte, error)
 	Put func(name string, content any, version int) error
 }
 
 // Resolver -
-var Resolver = func() *Resolve {
-	return &Resolve{
+var Resolver = func() *Resolution {
+	return &Resolution{
 		Get: func(name string, version int) ([]byte, error) {
 			return contentAgent.resolve(name, version)
 		},
@@ -105,8 +126,8 @@ var Resolver = func() *Resolve {
 	}
 }()
 
-// Get - generic typed get
-func Get[T any](name string, version int, resolver *Resolve) (T, error) {
+// Resolve - generic typed resolution
+func Resolve[T any](name string, version int, resolver *Resolution) (T, error) {
 	var t T
 
 	if resolver == nil {

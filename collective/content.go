@@ -8,25 +8,25 @@ type content struct {
 	body []byte
 }
 
-type contentKey struct {
-	name    string
-	version int
-}
-
 type contentT struct {
-	m       *sync.Map
-	resolve contentResolver
+	m        *sync.Map
+	resolver resolutionFunc
 }
 
-func newContentCache(r contentResolver) *contentT {
+func newContentCache(r resolutionFunc) *contentT {
 	c := new(contentT)
 	c.m = new(sync.Map)
-	c.resolve = r
+	c.resolver = r
 	return c
 }
 
-func (c *contentT) get(name string, version int) ([]byte, error) {
-	key := contentKey{name: name, version: version}
+func (c *contentT) load(dir string) error {
+
+	return nil
+}
+
+func (c *contentT) resolve(name string, version int) ([]byte, error) {
+	key := ResolutionKey{Name: name, Version: version}
 	value, ok := c.m.Load(key)
 	if !ok {
 		body, status := c.resolve(name, version)

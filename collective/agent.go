@@ -30,15 +30,15 @@ func contentAgentUri() string {
 }
 
 // newContentAgent - create a new agent1 agent
-func newContentAgent(handler messaging.OpsAgent, r contentResolver) messaging.Agent {
-	return newAgent(handler, r)
+func newContentAgent(handler messaging.OpsAgent, c *contentT) messaging.Agent {
+	return newAgent(handler, c)
 }
 
-func newAgent(handler messaging.OpsAgent, r contentResolver) *agentT {
+func newAgent(handler messaging.OpsAgent, c *contentT) *agentT {
 	a := new(agentT)
 	a.agentId = contentAgentUri()
 	a.duration = defaultDuration
-	a.cache = newContentCache(r)
+	a.cache = c
 	a.handler = handler
 	a.emissary = messaging.NewEmissaryChannel(true)
 	a.master = messaging.NewMasterChannel(true)
@@ -94,7 +94,7 @@ func (s *agentT) IsFinalized() bool {
 }
 
 func (s *agentT) resolve(name string, version int) ([]byte, error) {
-	body, status := s.cache.get(name, version)
+	body, status := s.cache.resolve(name, version)
 	if status != nil {
 		s.handler.Notify(status)
 	}
