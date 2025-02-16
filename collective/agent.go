@@ -10,15 +10,13 @@ const (
 	defaultDuration = time.Second * 10
 )
 
-var (
-	contentAgent *agentT
-)
-
 type agentT struct {
-	running  bool
-	agentId  string
-	duration time.Duration
-	cache    *contentT
+	running   bool
+	ephemeral bool
+	agentId   string
+	duration  time.Duration
+	cache     *contentT
+	resolver  resolutionFunc
 
 	handler  messaging.OpsAgent
 	emissary *messaging.Channel
@@ -29,16 +27,21 @@ func contentAgentUri() string {
 	return Class
 }
 
-// newContentAgent - create a new agent1 agent
-func newContentAgent(handler messaging.OpsAgent, c *contentT) messaging.Agent {
-	return newAgent(handler, c)
+func newHttpAgent(handler messaging.OpsAgent) *agentT {
+	return newContentAgent(handler, httpResolution, false)
 }
 
-func newAgent(handler messaging.OpsAgent, c *contentT) *agentT {
+func newEphemeralAgent(handler messaging.OpsAgent) *agentT {
+	return newContentAgent(handler, fileResolution, true)
+}
+
+func newContentAgent(handler messaging.OpsAgent, resolver resolutionFunc, ephemeral bool) *agentT {
 	a := new(agentT)
+	a.ephemeral = ephemeral
 	a.agentId = contentAgentUri()
 	a.duration = defaultDuration
-	a.cache = c
+	a.cache = newContentCache()
+	a.resolver = resolver
 	a.handler = handler
 	a.emissary = messaging.NewEmissaryChannel(true)
 	a.master = messaging.NewMasterChannel(true)
@@ -93,10 +96,14 @@ func (s *agentT) IsFinalized() bool {
 	return true
 }
 
-func (s *agentT) resolve(name string, version int) ([]byte, error) {
-	body, status := s.cache.resolve(name, version)
-	if status != nil {
-		s.handler.Notify(status)
-	}
-	return body, status
+func (s *agentT) get(name string, version int) ([]byte, error) {
+	return cache.get(name, version)
+}
+
+func (s *agentT) put(name string, buf []byte, version int) error {
+	return cache.put(name, buf, version)
+}
+
+func (s *agentT) load(dir string) error {
+	return nil
 }
