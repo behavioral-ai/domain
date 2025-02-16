@@ -44,15 +44,15 @@ func initialize(ex HttpExchange, handler messaging.OpsAgent, r contentResolver, 
 	newContentAgent(handler, r)
 }
 
-// IAppend - append
-type IAppend struct {
+// Append - append
+type Append struct {
 	Thing    func(name, cn string) error
 	Relation func(thing1, thing2 string) error
 }
 
-// Append -
-var Append = func() *IAppend {
-	return &IAppend{
+// Appender -
+var Appender = func() *Append {
+	return &Append{
 		Thing: func(name, cn string) error {
 			ok := thingAppend(name, cn)
 			if !ok {
@@ -70,27 +70,19 @@ var Append = func() *IAppend {
 	}
 }()
 
-// IResolver - resolution
-type IResolver struct {
-	Get        func(name string, version int) ([]byte, error)
-	GetRelated func(name string, version int) ([]byte, error)
-	Append     func(name string, content any, version int) error
+// Resolve - resolution
+type Resolve struct {
+	Get func(name string, version int) ([]byte, error)
+	Put func(name string, content any, version int) error
 }
 
 // Resolver -
-var Resolver = func() *IResolver {
-	return &IResolver{
+var Resolver = func() *Resolve {
+	return &Resolve{
 		Get: func(name string, version int) ([]byte, error) {
 			return contentAgent.resolve(name, version)
 		},
-		GetRelated: func(name string, version int) ([]byte, error) {
-			rel, status := relationCache.get(name)
-			if status != nil {
-				return nil, status
-			}
-			return contentAgent.resolve(rel.Thing2, version)
-		},
-		Append: func(name string, content any, version int) error {
+		Put: func(name string, content any, version int) error {
 			var buf []byte
 			if name == "" || content == nil || version <= 0 {
 				return errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version))
@@ -114,9 +106,12 @@ var Resolver = func() *IResolver {
 }()
 
 // Get - generic typed get
-func Get[T any](name string, version int, resolver IResolver) (T, error) {
+func Get[T any](name string, version int, resolver *Resolve) (T, error) {
 	var t T
 
+	if resolver == nil {
+		resolver = Resolver
+	}
 	body, status := resolver.Get(name, version)
 	if status != nil {
 		return t, status
@@ -133,15 +128,4 @@ func Get[T any](name string, version int, resolver IResolver) (T, error) {
 		}
 	}
 	return t, nil
-}
-
-// GetRelated - generic typed get
-func GetRelated[T any](name string, version int, resolver IResolver) (T, error) {
-	var t T
-
-	rel, status := relationCache.get(name)
-	if status != nil {
-		return t, status
-	}
-	return Get[T](rel.Thing2, version, resolver)
 }
