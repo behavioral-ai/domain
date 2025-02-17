@@ -27,7 +27,7 @@ func (c *contentT) get(name string, version int) ([]byte, error) {
 	key := ResolutionKey{Name: name, Version: version}
 	value, ok := c.m.Load(key)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("error: NotFound - name not found %v", name))
+		return nil, errors.New(fmt.Sprintf("error: NotFound - name \"%v\" version \"%v\"", name, version))
 	}
 	if value1, ok1 := value.(content); ok1 {
 		return value1.body, nil

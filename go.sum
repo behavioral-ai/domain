@@ -6,5 +6,11 @@ github.com/behavioral-ai/core v0.0.0-20250213183130-56ea38e98f22 h1:3N2KF8ItRpz9
 github.com/behavioral-ai/core v0.0.0-20250213183130-56ea38e98f22/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/behavioral-ai/core v0.0.0-20250214120112-3388bab2db77 h1:5vKZuGvrSrjoWW5MWoINMvfA+3gVsMrlOK3dh0/BsyI=
 github.com/behavioral-ai/core v0.0.0-20250214120112-3388bab2db77/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/behavioral-ai/core v0.0.0-20250214232254-ae65d78db788 h1:YJkBE8x6Ljxne4IkEXHe10n4JzlKLLl4Nh9s10vgrNg=
+github.com/behavioral-ai/core v0.0.0-20250214232254-ae65d78db788/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/behavioral-ai/core v0.0.0-20250217213029-cd48908ae98d h1:vGxrWEPz3PmkG9Kf646aIS1EU1gnUW8w+4mI9jA0NJ8=
+github.com/behavioral-ai/core v0.0.0-20250217213029-cd48908ae98d/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/behavioral-ai/core v0.0.0-20250217220115-3b2ee5483dee h1:ilSIwz1I4KR3MJxjp6PDkHQ+GSeFTrjzVNSbhKJABi0=
+github.com/behavioral-ai/core v0.0.0-20250217220115-3b2ee5483dee/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=

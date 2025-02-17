@@ -50,8 +50,8 @@ func Initialize(handler messaging.OpsAgent, ex HttpExchange, hosts []string) err
 }
 
 func InitializeEphemeral(handler messaging.OpsAgent, dir string) error {
-	if handler == nil || dir == "" {
-		return errors.New("error: bad request, handler or dir is empty")
+	if handler == nil {
+		return errors.New("error: bad request, handler is nil")
 	}
 	agent = newEphemeralAgent(handler)
 	return agent.load(dir)
@@ -115,7 +115,13 @@ var Resolver = func() *Resolution {
 			}
 			switch ptr := content.(type) {
 			case string:
-				buf = []byte(ptr)
+				var err error
+
+				v := text{ptr}
+				buf, err = json.Marshal(v)
+				if err != nil {
+					return err
+				}
 			case []byte:
 				buf = ptr
 			default:
@@ -136,12 +142,17 @@ func Resolve[T any](name string, version int) (T, error) {
 	var t T
 
 	body, status := Resolver.Get(name, version)
+	//body, status := c.get(name, version)
 	if status != nil {
 		return t, status
 	}
 	switch ptr := any(&t).(type) {
 	case *string:
-		*ptr = string(body)
+		t1, err := Resolve[text](name, version)
+		if err != nil {
+			return t, err
+		}
+		*ptr = t1.Value
 	case *[]byte:
 		*ptr = body
 	default:
@@ -151,4 +162,8 @@ func Resolve[T any](name string, version int) (T, error) {
 		}
 	}
 	return t, nil
+}
+
+type text struct {
+	Value string
 }

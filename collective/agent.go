@@ -98,6 +98,9 @@ func (s *agentT) IsFinalized() bool {
 }
 
 func (s *agentT) load(dir string) error {
+	if dir == "" {
+		return nil
+	}
 	return nil
 }
 
