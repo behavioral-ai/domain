@@ -65,13 +65,11 @@ type Relation struct {
 // Appender - append
 type Appender struct {
 	Thing    func(name, author, tags string) error
-	Relation func(name1, name2, author, tags string) error
 	Frame    func(name, author, tags string, aspects []Relation, version int) error
 	Likeness func(name, author, tags string, terms map[string]string) error
-
-	// NLP based functions
-	Rule     func(name, author, tags string, text string) error
 	Guidance func(name, author, tags string, text string) error
+	Relation func(name1, name2, author, tags string) error
+	Activity func(agent, event, location string, terms map[string]string) error
 }
 
 // Append -
@@ -80,19 +78,19 @@ var Append = func() *Appender {
 		Thing: func(name, author, tags string) error {
 			return errors.New("error: not implemented")
 		},
-		Relation: func(name1, name2, author, tags string) error {
-			return errors.New("error: not implemented")
-		},
 		Frame: func(name, author, tags string, aspects []Relation, version int) error {
 			return errors.New("error: not implemented")
 		},
 		Likeness: func(name, author, tags string, terms map[string]string) error {
 			return errors.New("error: not implemented")
 		},
-		Rule: func(name, author, tags, text string) error {
+		Guidance: func(name, author, tags, text string) error {
 			return errors.New("error: not implemented")
 		},
-		Guidance: func(name, author, tags, text string) error {
+		Relation: func(name1, name2, author, tags string) error {
+			return errors.New("error: not implemented")
+		},
+		Activity: func(agent, event, location string, terms map[string]string) error {
 			return errors.New("error: not implemented")
 		},
 	}
