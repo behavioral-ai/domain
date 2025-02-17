@@ -1,5 +1,5 @@
 package collective
 
-func httpResolution(method, name string, body []byte, version int) ([]byte, error) {
+func httpResolution(method, name, author string, body []byte, version int) ([]byte, error) {
 	return nil, nil
 }

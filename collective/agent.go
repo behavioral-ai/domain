@@ -2,6 +2,7 @@ package collective
 
 import (
 	"github.com/behavioral-ai/core/messaging"
+	"net/http"
 	"time"
 )
 
@@ -96,14 +97,30 @@ func (s *agentT) IsFinalized() bool {
 	return true
 }
 
-func (s *agentT) get(name string, version int) ([]byte, error) {
-	return cache.get(name, version)
-}
-
-func (s *agentT) put(name string, buf []byte, version int) error {
-	return cache.put(name, buf, version)
-}
-
 func (s *agentT) load(dir string) error {
 	return nil
+}
+
+func (s *agentT) resolverGet(name string, version int) ([]byte, error) {
+	buf, err := cache.get(name, version)
+	if err == nil {
+		return buf, err
+	}
+	buf, err = s.resolver(http.MethodGet, name, "", nil, version)
+	if err != nil {
+		return nil, err
+	}
+	err = s.cache.put(name, buf, version)
+	if err != nil {
+		return nil, err
+	}
+	return buf, nil
+}
+
+func (s *agentT) resolverPut(name, author string, buf []byte, version int) error {
+	_, err := s.resolver(http.MethodPut, name, author, buf, version)
+	if err != nil {
+		return err
+	}
+	return cache.put(name, buf, version)
 }

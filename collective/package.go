@@ -54,36 +54,46 @@ func InitializeEphemeral(handler messaging.OpsAgent, dir string) error {
 		return errors.New("error: bad request, handler or dir is empty")
 	}
 	agent = newEphemeralAgent(handler)
-	err := agent.load(dir)
-	if err != nil {
-		return err
-	}
+	return agent.load(dir)
+}
 
-	return nil
+type Relation struct {
+	Thing1 string `json:"thing1"`
+	Thing2 string `json:"thing2"`
 }
 
 // Appender - append
 type Appender struct {
-	Thing    func(name, cn string) error
-	Relation func(thing1, thing2 string) error
+	Thing    func(name, author, tags string) error
+	Relation func(name1, name2, author, tags string) error
+	Frame    func(name, author, tags string, aspects []Relation, version int) error
+	Likeness func(name, author, tags string, terms map[string]string) error
+
+	// NLP based functions
+	Rule     func(name, author, tags string, text string) error
+	Guidance func(name, author, tags string, text string) error
 }
 
 // Append -
 var Append = func() *Appender {
 	return &Appender{
-		Thing: func(name, cn string) error {
-			buf, err := json.Marshal(thing{Name: name, Cn: cn})
-			if err != nil {
-				return err
-			}
-			return agent.put(name, buf, 1)
+		Thing: func(name, author, tags string) error {
+			return errors.New("error: not implemented")
 		},
-		Relation: func(thing1, thing2 string) error {
-			buf, err := json.Marshal(relation{Thing1: thing1, Thing2: thing2})
-			if err != nil {
-				return err
-			}
-			return agent.put("relation", buf, 1)
+		Relation: func(name1, name2, author, tags string) error {
+			return errors.New("error: not implemented")
+		},
+		Frame: func(name, author, tags string, aspects []Relation, version int) error {
+			return errors.New("error: not implemented")
+		},
+		Likeness: func(name, author, tags string, terms map[string]string) error {
+			return errors.New("error: not implemented")
+		},
+		Rule: func(name, author, tags, text string) error {
+			return errors.New("error: not implemented")
+		},
+		Guidance: func(name, author, tags, text string) error {
+			return errors.New("error: not implemented")
 		},
 	}
 }()
@@ -91,16 +101,16 @@ var Append = func() *Appender {
 // Resolution - resolution
 type Resolution struct {
 	Get func(name string, version int) ([]byte, error)
-	Put func(name string, content any, version int) error
+	Put func(name, author string, content any, version int) error
 }
 
 // Resolver -
 var Resolver = func() *Resolution {
 	return &Resolution{
 		Get: func(name string, version int) ([]byte, error) {
-			return agent.get(name, version)
+			return agent.resolverGet(name, version)
 		},
-		Put: func(name string, content any, version int) error {
+		Put: func(name, author string, content any, version int) error {
 			var buf []byte
 			if name == "" || content == nil || version <= 0 {
 				return errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version))
@@ -118,7 +128,7 @@ var Resolver = func() *Resolution {
 					return err
 				}
 			}
-			return agent.put(name, buf, version)
+			return agent.resolverPut(name, author, buf, version)
 		},
 	}
 }()
