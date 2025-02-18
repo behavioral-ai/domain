@@ -65,10 +65,11 @@ type Relation struct {
 // Appender - append
 type Appender struct {
 	Thing    func(name, author, tags string) error
+	Relation func(name1, name2, author, tags string) error
+
 	Frame    func(name, author, tags string, aspects []Relation, version int) error
 	Likeness func(name, author, tags string, terms map[string]string) error
 	Guidance func(name, author, tags string, text string) error
-	Relation func(name1, name2, author, tags string) error
 	Activity func(agent, event, location string, terms map[string]string) error
 }
 
@@ -76,6 +77,9 @@ type Appender struct {
 var Append = func() *Appender {
 	return &Appender{
 		Thing: func(name, author, tags string) error {
+			return errors.New("error: not implemented")
+		},
+		Relation: func(name1, name2, author, tags string) error {
 			return errors.New("error: not implemented")
 		},
 		Frame: func(name, author, tags string, aspects []Relation, version int) error {
@@ -87,9 +91,7 @@ var Append = func() *Appender {
 		Guidance: func(name, author, tags, text string) error {
 			return errors.New("error: not implemented")
 		},
-		Relation: func(name1, name2, author, tags string) error {
-			return errors.New("error: not implemented")
-		},
+
 		Activity: func(agent, event, location string, terms map[string]string) error {
 			return errors.New("error: not implemented")
 		},
@@ -142,7 +144,6 @@ func Resolve[T any](name string, version int) (T, error) {
 	var t T
 
 	body, status := Resolver.Get(name, version)
-	//body, status := c.get(name, version)
 	if status != nil {
 		return t, status
 	}
