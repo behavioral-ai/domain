@@ -1,0 +1,11 @@
+[
+  {
+    "key": {
+      "name": "test:name",
+      "version": 2
+    },
+    "low":10,
+    "medium":40,
+    "high":80
+  }
+]
