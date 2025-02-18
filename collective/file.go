@@ -3,6 +3,8 @@ package collective
 import (
 	"errors"
 	"fmt"
+	"github.com/behavioral-ai/core/iox"
+	"io/fs"
 	"net/http"
 	"strconv"
 	"strings"
@@ -56,9 +58,26 @@ func parseResolutionKey(s string) (ResolutionKey, error) {
 	return k, nil
 }
 
-func load(dir string) error {
-	//fileSystem := os.DirFS(dirroot)
-	//fs.ReadDir(dir)
-
-	return nil
+func loadContent(c *contentT, dir string) error {
+	fileSystem := iox.DirFS(dir)
+	return fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if strings.Index(path, ".json") != -1 {
+			buf, err1 := fs.ReadFile(fileSystem, path)
+			if err1 != nil {
+				return err1
+			}
+			k, err2 := parseResolutionKey(string(buf))
+			if err2 != nil {
+				return err2
+			}
+			err2 = c.put(k.Name, buf, k.Version)
+			if err2 != nil {
+				return err2
+			}
+		}
+		return nil
+	})
 }

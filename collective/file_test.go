@@ -1,13 +1,10 @@
 package collective
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/behavioral-ai/core/iox"
+	"github.com/behavioral-ai/core/test"
 	"github.com/behavioral-ai/domain/testrsc"
-	"io/fs"
-	"log"
-	"os"
 	"strings"
 )
 
@@ -33,6 +30,7 @@ type lookupKey struct {
 	High   int           `json:"high"`
 }
 
+/*
 func ExampleLookup() {
 	var l []lookup
 
@@ -75,41 +73,64 @@ func ExampleLookupKey() {
 	//test: iox.ReadFile() -> [err:<nil>]
 	//test: json.Unmarshal() -> [err:<nil>] [[{{ 0} 10 40 80}]]
 	//test: iox.ReadFile() -> [err:<nil>]
-	//test: json.Unmarshal() -> [err:<nil>] [[{{test:name 2} 10 40 80}]]
+	//test: json.Unmarshal() -> [err:<nil>] [[{{resiliency:thing/operative/agent/gradient 1} 10 40 80}]]
 
 }
 
-func _ExampleParseResolutionKey() {
-	buf, _ := iox.ReadFile(testrsc.ResiliencyGradientKey)
+
+*/
+
+func ExampleParseResolutionKey() {
+	buf, _ := iox.ReadFile(testrsc.ResiliencyGradient)
 	s := string(buf)
 
 	k, err := parseResolutionKey(s)
 	fmt.Printf("test: ParseResolutionKey() -> [err:%v] [%v]\n", err, k)
 
 	//Output:
-	//test: ParseResolutionKey() -> [err:<nil>] [{test:name 2}]
+	//test: ParseResolutionKey() -> [err:<nil>] [{resiliency:thing/operative/agent/gradient 1}]
 
 }
 
-func ExampleReadDir() {
-	//dir, err := os.Getwd()
-	var err error
-	dir := "c:\\Users\\markb\\GitHub\\domain\\testrsc\\files\\resiliency"
-	if err != nil {
-		fmt.Printf("test: os.Getwd() -> [err:%v]\n", err)
-	}
-	fmt.Printf("test: wd() -> [%v]\n", dir)
-	fileSystem := os.DirFS(dir)
-	fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(path)
-		return nil
-	})
+func _ExampleFileLoad() {
+	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
+	name1 := "resiliency:thing/operative/agent/gradient"
+	name2 := "resiliency:thing/operative/agent/threshold"
+
+	c := newContentCache()
+	err := loadContent(c, dir)
+	fmt.Printf("test: loadContent() -> [err:%v]\n", err)
+
+	buf, err1 := c.get(name1, 1)
+	fmt.Printf("test: c.get() -> [err:%v] [%v]\n", err1, string(buf))
+
+	buf, err1 = c.get(name2, 2)
+	fmt.Printf("test: c.get() -> [err:%v] [%v]\n", err1, string(buf))
 
 	//Output:
 	//fail
+
+}
+
+func ExampleEphemeralLoad() {
+	urn := "test:agent/operative"
+	name1 := "resiliency:thing/operative/agent/gradient"
+	name2 := "resiliency:thing/operative/agent/threshold"
+	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
+
+	err := InitializeEphemeral(test.NewAgent(urn), dir)
+	fmt.Printf("test: InitializeEphemeral() -> [err:%v]\n", err)
+
+	v, err1 := Resolve[[]lookup](name1, 1)
+	fmt.Printf("test: Resolve[lookup] -> [err:%v] [%v]\n", err1, v)
+
+	v, err1 = Resolve[[]lookup](name2, 2)
+	fmt.Printf("test: Resolve[lookup] -> [err:%v] [%v]\n", err1, v)
+
+	//Output:
+	//test: InitializeEphemeral() -> [err:<nil>]
+	//test: Resolve[lookup] -> [err:<nil>] [[{10 40 80}]]
+	//test: Resolve[lookup] -> [err:<nil>] [[{15 42 85}]]
 
 }
 

@@ -23,7 +23,6 @@ const (
 
 var (
 	agent *agentT
-	cache = newContentCache()
 	do    = func(r *http.Request) (*http.Response, error) {
 		return nil, errors.New("error: Collective HttpExchange function has not be initialized")
 	}

@@ -50,80 +50,80 @@ func newContentAgent(handler messaging.OpsAgent, resolver resolutionFunc, epheme
 }
 
 // String - identity
-func (s *agentT) String() string { return s.Uri() }
+func (a *agentT) String() string { return a.Uri() }
 
 // Uri - agent identifier
-func (s *agentT) Uri() string { return s.agentId }
+func (a *agentT) Uri() string { return a.agentId }
 
 // Message - message the agent
-func (s *agentT) Message(m *messaging.Message) {
+func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
 	switch m.To() {
 	case messaging.EmissaryChannel:
-		s.emissary.Send(m)
+		a.emissary.Send(m)
 	case messaging.MasterChannel:
-		s.master.Send(m)
+		a.master.Send(m)
 	default:
-		s.emissary.Send(m)
+		a.emissary.Send(m)
 	}
 }
 
 // Run - run the agent
-func (s *agentT) Run() {
-	if s.running {
+func (a *agentT) Run() {
+	if a.running {
 		return
 	}
-	go masterAttend(s)
-	go emissaryAttend(s)
-	s.running = true
+	go masterAttend(a)
+	go emissaryAttend(a)
+	a.running = true
 }
 
 // Shutdown - shutdown the agent
-func (s *agentT) Shutdown() {
-	if !s.running {
+func (a *agentT) Shutdown() {
+	if !a.running {
 		return
 	}
-	s.running = false
-	msg := messaging.NewControlMessage(s.Uri(), s.Uri(), messaging.ShutdownEvent)
-	s.emissary.Enable()
-	s.emissary.Send(msg)
-	s.master.Enable()
-	s.master.Send(msg)
+	a.running = false
+	msg := messaging.NewControlMessage(a.Uri(), a.Uri(), messaging.ShutdownEvent)
+	a.emissary.Enable()
+	a.emissary.Send(msg)
+	a.master.Enable()
+	a.master.Send(msg)
 }
 
-func (s *agentT) IsFinalized() bool {
+func (a *agentT) IsFinalized() bool {
 	return true
 }
 
-func (s *agentT) load(dir string) error {
+func (a *agentT) load(dir string) error {
 	if dir == "" {
 		return nil
 	}
-	return load(dir)
+	return loadContent(a.cache, dir)
 }
 
-func (s *agentT) resolverGet(name string, version int) ([]byte, error) {
-	buf, err := cache.get(name, version)
+func (a *agentT) resolverGet(name string, version int) ([]byte, error) {
+	buf, err := a.cache.get(name, version)
 	if err == nil {
 		return buf, err
 	}
-	buf, err = s.resolver(http.MethodGet, name, "", nil, version)
+	buf, err = a.resolver(http.MethodGet, name, "", nil, version)
 	if err != nil {
 		return nil, err
 	}
-	err = s.cache.put(name, buf, version)
+	err = a.cache.put(name, buf, version)
 	if err != nil {
 		return nil, err
 	}
 	return buf, nil
 }
 
-func (s *agentT) resolverPut(name, author string, buf []byte, version int) error {
-	_, err := s.resolver(http.MethodPut, name, author, buf, version)
+func (a *agentT) resolverPut(name, author string, buf []byte, version int) error {
+	_, err := a.resolver(http.MethodPut, name, author, buf, version)
 	if err != nil {
 		return err
 	}
-	return cache.put(name, buf, version)
+	return a.cache.put(name, buf, version)
 }
