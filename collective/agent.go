@@ -101,7 +101,7 @@ func (s *agentT) load(dir string) error {
 	if dir == "" {
 		return nil
 	}
-	return nil
+	return load(dir)
 }
 
 func (s *agentT) resolverGet(name string, version int) ([]byte, error) {
