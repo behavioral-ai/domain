@@ -1,3 +1,0 @@
-GET /github/advanced-go/observation:v1/timeseries/egress/entry HTTP/1.1
-X-Content-Location-Exchange: response->file:///f:/files/timeseries1/egress-entry.json
-
