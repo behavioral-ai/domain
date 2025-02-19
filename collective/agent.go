@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Class           = "content.agent"
+	agentUri        = "root:agent/domain/collective"
 	defaultDuration = time.Second * 10
 )
 
@@ -15,6 +15,7 @@ type agentT struct {
 	running   bool
 	ephemeral bool
 	agentId   string
+	uri       []string
 	duration  time.Duration
 	cache     *contentT
 	resolver  resolutionFunc
@@ -24,26 +25,17 @@ type agentT struct {
 	master   *messaging.Channel
 }
 
-func contentAgentUri() string {
-	return Class
-}
-
-func newHttpAgent(handler messaging.OpsAgent) *agentT {
-	return newContentAgent(handler, httpResolution, false)
-}
-
-func newEphemeralAgent(handler messaging.OpsAgent) *agentT {
-	return newContentAgent(handler, fileResolution, true)
-}
-
-func newContentAgent(handler messaging.OpsAgent, resolver resolutionFunc, ephemeral bool) *agentT {
+func newContentAgent(ephemeral bool) *agentT {
 	a := new(agentT)
 	a.ephemeral = ephemeral
-	a.agentId = contentAgentUri()
+	a.agentId = agentUri
 	a.duration = defaultDuration
 	a.cache = newContentCache()
-	a.resolver = resolver
-	a.handler = handler
+	if ephemeral {
+		a.resolver = fileResolution
+	} else {
+		a.resolver = httpResolution
+	}
 	a.emissary = messaging.NewEmissaryChannel(true)
 	a.master = messaging.NewMasterChannel(true)
 	return a

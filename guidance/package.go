@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	PkgPath    = "github/behavioral-ai/guidance/guidance"
+	PkgPath    = "github/behavioral-ai/domain/guidance"
 	WestRegion = "us-west1"
 	WestZoneA  = "w-a"
 	WestZoneB  = "w-b"

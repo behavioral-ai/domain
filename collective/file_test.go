@@ -3,7 +3,6 @@ package collective
 import (
 	"fmt"
 	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/core/test"
 	"github.com/behavioral-ai/domain/testrsc"
 	"strings"
 )
@@ -113,22 +112,21 @@ func _ExampleFileLoad() {
 }
 
 func ExampleEphemeralLoad() {
-	urn := "test:agent/operative"
 	name1 := "resiliency:thing/operative/agent/gradient"
 	name2 := "resiliency:thing/operative/agent/threshold"
 	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
 
-	err := InitializeEphemeral(test.NewAgent(urn), dir)
-	fmt.Printf("test: InitializeEphemeral() -> [err:%v]\n", err)
+	r, err := NewEphemeralResolver(dir)
+	fmt.Printf("test: NewEphemeralResolver() -> [err:%v]\n", err)
 
-	v, err1 := Resolve[[]lookup](name1, 1)
+	v, err1 := Resolve[[]lookup](name1, 1, r)
 	fmt.Printf("test: Resolve[lookup] -> [err:%v] [%v]\n", err1, v)
 
-	v, err1 = Resolve[[]lookup](name2, 2)
+	v, err1 = Resolve[[]lookup](name2, 2, r)
 	fmt.Printf("test: Resolve[lookup] -> [err:%v] [%v]\n", err1, v)
 
 	//Output:
-	//test: InitializeEphemeral() -> [err:<nil>]
+	//test: NewEphemeralResolver() -> [err:<nil>]
 	//test: Resolve[lookup] -> [err:<nil>] [[{10 40 80}]]
 	//test: Resolve[lookup] -> [err:<nil>] [[{15 42 85}]]
 

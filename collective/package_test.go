@@ -3,7 +3,6 @@ package collective
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/behavioral-ai/core/test"
 )
 
 func _ExampleResolveString() {
@@ -17,7 +16,7 @@ func _ExampleResolveString() {
 		err = c.put(name, buf, 1)
 		fmt.Printf("test: newContentCache.put(1) -> [err:%v]\n", err)
 
-		v, err1 := Resolve[text](name, 1)
+		v, err1 := Resolve[text](name, 1, nil)
 		fmt.Printf("test: Resolve[text]() -> [err:%v] [%v]\n", err1, v)
 	}
 
@@ -25,21 +24,20 @@ func _ExampleResolveString() {
 	//fail
 }
 
-func ExampleInitializeEphemeral() {
-	a := "test:agent/operative"
+func ExampleEphemeralResolver() {
 	name := "test:thing/string"
 	s := "test Ephemeral resolver"
 
-	err := InitializeEphemeral(test.NewAgent(a), "")
-	fmt.Printf("test: InitializeEphemeral() -> [err:%v]\n", err)
+	r, err := NewEphemeralResolver("")
+	fmt.Printf("test: NewEphemeralResolver() -> [err:%v]\n", err)
 
-	err = Resolver.Put(name, "", s, 1)
+	err = r.Put(name, "", s, 1)
 	fmt.Printf("test: Resolver.Put() -> [err:%v]\n", err)
 
-	v, err1 := Resolve[string](name, 1)
+	v, err1 := Resolve[string](name, 1, r)
 	fmt.Printf("test: Resolve[string] -> [err:%v] [%v]\n", err1, v)
 
-	v, err1 = Resolve[string](name, 2)
+	v, err1 = Resolve[string](name, 2, r)
 	fmt.Printf("test: Resolve[string] -> [err:%v] [%v]\n", err1, v)
 
 	//Output:

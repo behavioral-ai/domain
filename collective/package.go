@@ -4,58 +4,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/behavioral-ai/core/messaging"
 	"net/http"
 )
 
 // Applications can create as many domains/NISD as needed
-// "agent" is the reserved domain for the agent collective supporting agent development
 
 const (
 	ResourceUri = "urn:collective"
-
-	AgentNID = "agent" // Restricted NID/Domain
-
-	ThingNSS  = "thing"  // urn:{NID}:thing:{module-package}:{type}
-	AspectNSS = "aspect" // urn:{NID}:aspect:{path}
+	AgentNID    = "agent"  // Restricted NID/Domain
+	ThingNSS    = "thing"  // urn:{NID}:thing:{module-package}:{type}
+	AspectNSS   = "aspect" // urn:{NID}:aspect:{path}
 
 )
 
-var (
-	agent *agentT
-	do    = func(r *http.Request) (*http.Response, error) {
-		return nil, errors.New("error: Collective HttpExchange function has not be initialized")
-	}
-)
-
-// ResolutionKey -
-type ResolutionKey struct {
-	Name    string `json:"name"`
-	Version int    `json:"version"`
-}
-
-// HttpExchange - exchange type
-type HttpExchange func(r *http.Request) (*http.Response, error)
-
-// Initialize - collective initialize, hosts are service hosts for cloud collective
-func Initialize(handler messaging.OpsAgent, ex HttpExchange, hosts []string) error {
-	if ex == nil || handler == nil || len(hosts) == 0 {
-		return errors.New("error: bad request, handler, exchange, or hosts are empty")
-	}
-	// Where to set hosts??
-	do = ex
-	agent = newHttpAgent(handler)
-	return nil
-}
-
-func InitializeEphemeral(handler messaging.OpsAgent, dir string) error {
-	if handler == nil {
-		return errors.New("error: bad request, handler is nil")
-	}
-	agent = newEphemeralAgent(handler)
-	return agent.load(dir)
-}
-
+// Relation -
 type Relation struct {
 	Thing1 string `json:"thing1"`
 	Thing2 string `json:"thing2"`
@@ -97,58 +59,88 @@ var Append = func() *Appender {
 	}
 }()
 
-// Resolution - resolution
-type Resolution struct {
-	Get func(name string, version int) ([]byte, error)
-	Put func(name, author string, content any, version int) error
+// Resolver -
+var (
+	Resolver = newHttpResolver()
+)
+
+// ResolutionKey -
+type ResolutionKey struct {
+	Name    string `json:"name"`
+	Version int    `json:"version"`
 }
 
-// Resolver -
-var Resolver = func() *Resolution {
-	return &Resolution{
-		Get: func(name string, version int) ([]byte, error) {
-			return agent.resolverGet(name, version)
-		},
-		Put: func(name, author string, content any, version int) error {
-			var buf []byte
-			if name == "" || content == nil || version <= 0 {
-				return errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version))
-			}
-			switch ptr := content.(type) {
-			case string:
-				var err error
+// HttpExchange - exchange type
+type HttpExchange func(r *http.Request) (*http.Response, error)
 
-				v := text{ptr}
-				buf, err = json.Marshal(v)
-				if err != nil {
-					return err
-				}
-			case []byte:
-				buf = ptr
-			default:
-				var err error
-
-				buf, err = json.Marshal(ptr)
-				if err != nil {
-					return err
-				}
-			}
-			return agent.resolverPut(name, author, buf, version)
-		},
+// StartupResolver - run the content agent
+func StartupResolver(uri []string, do HttpExchange) {
+	if r, ok := any(Resolver).(*resolution); ok {
+		if do != nil {
+			r.do = do
+		}
+		r.agent.uri = uri
+		r.agent.Run()
 	}
-}()
+}
+
+// Resolution - of things in the real world
+type Resolution interface {
+	Get(name string, version int) ([]byte, error)
+	Put(name, author string, content any, version int) error
+}
+
+type resolution struct {
+	do    HttpExchange
+	hosts []string
+	agent *agentT
+}
+
+func newHttpResolver() Resolution {
+	r := new(resolution)
+	r.agent = newContentAgent(false)
+	return r
+}
+
+// NewEphemeralResolver - in memory resolver
+func NewEphemeralResolver(dir string) (Resolution, error) {
+	r := new(resolution)
+	r.agent = newContentAgent(true)
+	err := r.agent.load(dir)
+	r.agent.Run()
+	return r, err
+}
+
+// Get - resolution get
+func (r *resolution) Get(name string, version int) ([]byte, error) {
+	if name == "" || version <= 0 {
+		return nil, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version))
+	}
+	return r.agent.resolverGet(name, version)
+}
+
+// Put - resolution put
+func (r *resolution) Put(name, author string, content any, version int) error {
+	if name == "" || content == nil || version <= 0 {
+		return errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version))
+	}
+	return resolverPut(r, name, author, content, version)
+}
 
 // Resolve - generic typed resolution
-func Resolve[T any](name string, version int) (T, error) {
+func Resolve[T any](name string, version int, resolver Resolution) (T, error) {
 	var t T
 
-	body, status := Resolver.Get(name, version)
+	if resolver == nil {
+		return t, errors.New("error: BadRequest - resolver is nil")
+	}
+	body, status := resolver.Get(name, version)
 	if status != nil {
 		return t, status
 	}
 	switch ptr := any(&t).(type) {
 	case *string:
-		t1, err := Resolve[text](name, version)
+		t1, err := Resolve[text](name, version, resolver)
 		if err != nil {
 			return t, err
 		}
@@ -158,12 +150,21 @@ func Resolve[T any](name string, version int) (T, error) {
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			return t, errors.New(fmt.Sprintf("error: JsonEncode %v", err))
+			return t, errors.New(fmt.Sprintf("error: JsonEncode - %v", err))
 		}
 	}
 	return t, nil
 }
 
-type text struct {
-	Value string
+/*
+// Initialize - collective initialize, hosts are service hosts for cloud collective
+func Initialize(handler messaging.OpsAgent, ex HttpExchange, hosts []string) error {
+	if ex == nil || handler == nil || len(hosts) == 0 {
+		return errors.New("error: bad request, handler, exchange, or hosts are empty")
+	}
+	// Where to set hosts??
+	do = ex
+	agent = newHttpAgent(handler)
+	return nil
 }
+*/
