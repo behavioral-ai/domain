@@ -24,7 +24,7 @@ const (
 
 // Append -
 var (
-	Append = newAppender()
+	Append = newHttpAppender()
 )
 
 // Relation -
@@ -35,50 +35,51 @@ type Relation struct {
 
 // Appender - collective append
 type Appender interface {
-	Thing(name, author, tags string) error
-	Relation(name1, name2, author, tags string) error
-	Frame(name, author, tags string, aspects []Relation, version int) error
-	Likeness(name, author, tags string, terms map[string]string) error
-	Guidance(name, author, tags string, text string) error
-	Activity(agent messaging.Agent, event, location string, terms map[string]string) error
+	Thing(name, author, tags string) *messaging.Status
+	Relation(name1, name2, author, tags string) *messaging.Status
+	Frame(name, author, tags string, aspects []Relation, version int) *messaging.Status
+	Likeness(name, author, tags string, terms map[string]string) *messaging.Status
+	Guidance(name, author, tags string, text string) *messaging.Status
+	Activity(agent messaging.Agent, event, location string, terms map[string]string) *messaging.Status
 }
 
 type appender struct{}
 
 // newAppender -
-func newAppender() Appender {
+func newHttpAppender() Appender {
 	a := new(appender)
 	return a
 }
 
 // Thing - append a thing
-func (a *appender) Thing(name, author, tags string) error {
-	return errors.New("error: not implemented")
+func (a *appender) Thing(name, author, tags string) *messaging.Status {
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Relation - append a relation
-func (a *appender) Relation(name1, name2, author, tags string) error {
-	return errors.New("error: not implemented")
+func (a *appender) Relation(name1, name2, author, tags string) *messaging.Status {
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Frame - append a frame
-func (a *appender) Frame(name, author, tags string, aspects []Relation, version int) error {
-	return errors.New("error: not implemented")
+func (a *appender) Frame(name, author, tags string, aspects []Relation, version int) *messaging.Status {
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Likeness - append a likeness
-func (a *appender) Likeness(name, author, tags string, terms map[string]string) error {
-	return errors.New("error: not implemented")
+func (a *appender) Likeness(name, author, tags string, terms map[string]string) *messaging.Status {
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Guidance - append guidance
-func (a *appender) Guidance(name, author, tags, text string) error {
-	return errors.New("error: not implemented")
+func (a *appender) Guidance(name, author, tags, text string) *messaging.Status {
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Activity - append activity
-func (a *appender) Activity(agent messaging.Agent, event, location string, terms map[string]string) error {
-	return errors.New("error: not implemented")
+func (a *appender) Activity(agent messaging.Agent, event, location string, terms map[string]string) *messaging.Status {
+	fmt.Printf("agent: %v event: %v location: %v terms:%v", agent, event, location, terms)
+	return messaging.StatusOK() //errors.New("error: not implemented")
 }
 
 // Resolver - collective resolution in the real world
