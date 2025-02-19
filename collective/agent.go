@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	agentUri        = "root:agent/domain/collective"
+	agentUri        = "root:agent/domain/collective/content"
 	defaultDuration = time.Second * 10
 )
 

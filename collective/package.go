@@ -81,7 +81,7 @@ func (a *appender) Activity(agent messaging.Agent, event, location string, terms
 	return errors.New("error: not implemented")
 }
 
-// Resolver -
+// Resolver - collective resolution in the real world
 var (
 	Resolver = newHttpResolver()
 )
@@ -106,7 +106,7 @@ func StartupResolver(uri []string, do HttpExchange) {
 	}
 }
 
-// Resolution - of things in the real world
+// Resolution - in the real world
 type Resolution interface {
 	Get(name string, version int) ([]byte, error)
 	Put(name, author string, content any, version int) error

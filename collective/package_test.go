@@ -41,7 +41,7 @@ func ExampleEphemeralResolver() {
 	fmt.Printf("test: Resolve[string] -> [err:%v] [%v]\n", err1, v)
 
 	//Output:
-	//test: InitializeEphemeral() -> [err:<nil>]
+	//test: NewEphemeralResolver() -> [err:<nil>]
 	//test: Resolver.Put() -> [err:<nil>]
 	//test: Resolve[string] -> [err:<nil>] [test Ephemeral resolver]
 	//test: Resolve[string] -> [err:error: not found, name "test:thing/string" version "2"] []
