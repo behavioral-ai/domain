@@ -13,14 +13,14 @@ func ExampleNewContentCache() {
 	if err != nil {
 		fmt.Printf("test: json.Marshall() -> [err:%v]\n", err)
 	} else {
-		err = c.put(name, buf, 1)
-		fmt.Printf("test: newContentCache.put(1) -> [err:%v]\n", err)
+		status := c.put(name, buf, 1)
+		fmt.Printf("test: newContentCache.put(1) -> [status:%v]\n", status)
 
-		buf, err = c.get(name, 2)
-		fmt.Printf("test: newContentCache.get(2) -> [err:%v]\n", err)
+		buf, status = c.get(name, 2)
+		fmt.Printf("test: newContentCache.get(2) -> [status:%v]\n", status)
 
-		buf, err = c.get(name, 1)
-		fmt.Printf("test: newContentCache.get(1) -> [err:%v]\n", err)
+		buf, status = c.get(name, 1)
+		fmt.Printf("test: newContentCache.get(1) -> [status:%v]\n", status)
 
 		var v text
 		err = json.Unmarshal(buf, &v)
@@ -28,9 +28,9 @@ func ExampleNewContentCache() {
 	}
 
 	//Output:
-	//test: newContentCache.put(1) -> [err:<nil>]
-	//test: newContentCache.get(2) -> [err:error: NotFound - name "test:thing:text" version "2"]
-	//test: newContentCache.get(1) -> [err:<nil>]
+	//test: newContentCache.put(1) -> [status:OK]
+	//test: newContentCache.get(2) -> [status:Not Found [error: name "test:thing:text" version "2"]]
+	//test: newContentCache.get(1) -> [status:OK]
 	//test: json.Unmarshal() -> [err:<nil>] [{Hello World!}]
 
 }

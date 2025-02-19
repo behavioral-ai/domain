@@ -1,6 +1,7 @@
 package collective
 
 import (
+	"errors"
 	"github.com/behavioral-ai/core/messaging"
 )
 
@@ -28,7 +29,7 @@ func masterAttend(agent *agentT) {
 				return
 
 			default:
-				agent.handler.Notify(messaging.EventError(agent.Uri(), msg))
+				agent.Notify(messaging.NewStatusError(messaging.StatusInvalidContent, errors.New("invalid message"))) //messaging.EventError(agent.Uri(), msg))
 			}
 			//comms.dispatch(agent, msg.Event())
 		default:

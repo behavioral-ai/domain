@@ -3,6 +3,7 @@ package collective
 import (
 	"fmt"
 	"github.com/behavioral-ai/core/iox"
+	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/domain/testrsc"
 	"strings"
 )
@@ -97,18 +98,22 @@ func _ExampleFileLoad() {
 	name2 := "resiliency:thing/operative/agent/threshold"
 
 	c := newContentCache()
-	err := loadContent(c, dir)
+	err := loadContent(notifyFunc, c, dir)
 	fmt.Printf("test: loadContent() -> [err:%v]\n", err)
 
-	buf, err1 := c.get(name1, 1)
-	fmt.Printf("test: c.get() -> [err:%v] [%v]\n", err1, string(buf))
+	buf, status := c.get(name1, 1)
+	fmt.Printf("test: c.get() -> [status:%v] [%v]\n", status, string(buf))
 
-	buf, err1 = c.get(name2, 2)
-	fmt.Printf("test: c.get() -> [err:%v] [%v]\n", err1, string(buf))
+	buf, status = c.get(name2, 2)
+	fmt.Printf("test: c.get() -> [status:%v] [%v]\n", status, string(buf))
 
 	//Output:
 	//fail
 
+}
+
+func notifyFunc(status *messaging.Status) {
+	fmt.Printf("status: %v", status)
 }
 
 func ExampleEphemeralLoad() {
@@ -116,19 +121,19 @@ func ExampleEphemeralLoad() {
 	name2 := "resiliency:thing/operative/agent/threshold"
 	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
 
-	r, err := NewEphemeralResolver(dir)
-	fmt.Printf("test: NewEphemeralResolver() -> [err:%v]\n", err)
+	r, status := NewEphemeralResolver(dir, notifyFunc)
+	fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
-	v, err1 := Resolve[[]lookup](name1, 1, r)
-	fmt.Printf("test: Resolve[lookup] -> [err:%v] [%v]\n", err1, v)
+	v, status1 := Resolve[[]lookup](name1, 1, r)
+	fmt.Printf("test: Resolve[[]lookup] -> [status:%v] [%v]\n", status1, v)
 
-	v, err1 = Resolve[[]lookup](name2, 2, r)
-	fmt.Printf("test: Resolve[lookup] -> [err:%v] [%v]\n", err1, v)
+	v, status1 = Resolve[[]lookup](name2, 2, r)
+	fmt.Printf("test: Resolve[[]lookup] -> [status:%v] [%v]\n", status1, v)
 
 	//Output:
-	//test: NewEphemeralResolver() -> [err:<nil>]
-	//test: Resolve[lookup] -> [err:<nil>] [[{10 40 80}]]
-	//test: Resolve[lookup] -> [err:<nil>] [[{15 42 85}]]
+	//test: NewEphemeralResolver() -> [status:OK]
+	//test: Resolve[[]lookup] -> [status:OK] [[{10 40 80}]]
+	//test: Resolve[[]lookup] -> [status:OK] [[{15 42 85}]]
 
 }
 

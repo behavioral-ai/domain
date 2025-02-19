@@ -2,8 +2,8 @@ package collective
 
 import (
 	"errors"
-	"fmt"
 	"github.com/behavioral-ai/core/iox"
+	"github.com/behavioral-ai/core/messaging"
 	"io/fs"
 	"net/http"
 	"strconv"
@@ -11,12 +11,12 @@ import (
 )
 
 // fileResolution - is read only and returns "not found" on gets
-func fileResolution(method, name, _ string, _ []byte, version int) ([]byte, error) {
+func fileResolution(method, name, _ string, _ []byte, version int) ([]byte, *messaging.Status) {
 	// file resolution is read only
 	if method == http.MethodPut {
-		return nil, nil
+		return nil, messaging.StatusOK()
 	}
-	return nil, errors.New(fmt.Sprintf("error: not found, name \"%v\" version \"%v\"", name, version))
+	return nil, messaging.StatusNotFound()
 }
 
 func parseResolutionKey(s string) (ResolutionKey, error) {
@@ -58,7 +58,7 @@ func parseResolutionKey(s string) (ResolutionKey, error) {
 	return k, nil
 }
 
-func loadContent(c *contentT, dir string) error {
+func loadContent(notify messaging.NotifyFunc, cache *contentT, dir string) error {
 	fileSystem := iox.DirFS(dir)
 	return fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -67,15 +67,17 @@ func loadContent(c *contentT, dir string) error {
 		if strings.Index(path, ".json") != -1 {
 			buf, err1 := fs.ReadFile(fileSystem, path)
 			if err1 != nil {
+				notify(messaging.NewStatusError(messaging.StatusIOError, err1))
 				return err1
 			}
 			k, err2 := parseResolutionKey(string(buf))
 			if err2 != nil {
+				notify(messaging.NewStatusError(http.StatusBadRequest, err2))
 				return err2
 			}
-			err2 = c.put(k.Name, buf, k.Version)
-			if err2 != nil {
-				return err2
+			status := cache.put(k.Name, buf, k.Version)
+			if !status.OK() {
+				return status.Err
 			}
 		}
 		return nil

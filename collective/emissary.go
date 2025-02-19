@@ -1,6 +1,8 @@
 package collective
 
 import (
+	"errors"
+	"fmt"
 	"github.com/behavioral-ai/core/messaging"
 )
 
@@ -30,7 +32,7 @@ func emissaryAttend(agent *agentT) {
 				return
 			//case messaging.DataChangeEvent:
 			default:
-				agent.handler.Notify(messaging.EventError(agent.Uri(), msg))
+				agent.Notify(messaging.NewStatusError(messaging.StatusInvalidContent, errors.New(fmt.Sprintf("%v %v", agent.Uri(), msg.Event())))) //messaging.EventError(agent.Uri(), msg))
 			}
 		default:
 		}

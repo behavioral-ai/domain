@@ -1,5 +1,7 @@
 package collective
 
+import "github.com/behavioral-ai/core/messaging"
+
 // Thing
 type thing struct {
 	Name   string `json:"name"` // Uuid
@@ -15,4 +17,4 @@ type relation struct {
 }
 
 // ResolutionFunc - data store function
-type resolutionFunc func(method, name, author string, body []byte, version int) ([]byte, error)
+type resolutionFunc func(method, name, author string, body []byte, version int) ([]byte, *messaging.Status)

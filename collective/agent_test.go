@@ -3,7 +3,7 @@ package collective
 import "fmt"
 
 func ExampleNewAgent() {
-	a := newContentAgent(false)
+	a := newContentAgent(false, nil)
 
 	fmt.Printf("test: newHttpAgent() -> [%v]\n", a)
 

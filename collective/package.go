@@ -108,8 +108,8 @@ func StartupResolver(uri []string, do HttpExchange) {
 
 // Resolution - in the real world
 type Resolution interface {
-	Get(name string, version int) ([]byte, error)
-	Put(name, author string, content any, version int) error
+	Get(name string, version int) ([]byte, *messaging.Status)
+	Put(name, author string, content any, version int) *messaging.Status
 }
 
 type resolution struct {
@@ -120,51 +120,80 @@ type resolution struct {
 
 func newHttpResolver() Resolution {
 	r := new(resolution)
-	r.agent = newContentAgent(false)
+	r.agent = newContentAgent(false, nil)
 	return r
 }
 
 // NewEphemeralResolver - in memory resolver
-func NewEphemeralResolver(dir string) (Resolution, error) {
+func NewEphemeralResolver(dir string, notify messaging.NotifyFunc) (Resolution, *messaging.Status) {
 	r := new(resolution)
-	r.agent = newContentAgent(true)
+	r.agent = newContentAgent(true, notify)
 	err := r.agent.load(dir)
 	r.agent.Run()
 	return r, err
 }
 
 // Get - resolution get
-func (r *resolution) Get(name string, version int) ([]byte, error) {
+func (r *resolution) Get(name string, version int) ([]byte, *messaging.Status) {
 	if name == "" || version <= 0 {
-		return nil, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version))
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)))
+		r.agent.Notify(status)
+		return nil, status
 	}
 	return r.agent.resolverGet(name, version)
 }
 
 // Put - resolution put
-func (r *resolution) Put(name, author string, content any, version int) error {
+func (r *resolution) Put(name, author string, content any, version int) *messaging.Status {
 	if name == "" || content == nil || version <= 0 {
-		return errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version))
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version)))
+		r.agent.Notify(status)
+		return status
 	}
-	return resolverPut(r, name, author, content, version)
+	var buf []byte
+
+	switch ptr := content.(type) {
+	case string:
+		var err error
+
+		v := text{ptr}
+		buf, err = json.Marshal(v)
+		if err != nil {
+			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err)
+			r.agent.Notify(status)
+			return status
+		}
+	case []byte:
+		buf = ptr
+	default:
+		var err error
+
+		buf, err = json.Marshal(ptr)
+		if err != nil {
+			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err)
+			r.agent.Notify(status)
+			return status
+		}
+	}
+	return r.agent.resolverPut(name, author, buf, version)
 }
 
 // Resolve - generic typed resolution
-func Resolve[T any](name string, version int, resolver Resolution) (T, error) {
+func Resolve[T any](name string, version int, resolver Resolution) (T, *messaging.Status) {
 	var t T
 
 	if resolver == nil {
-		return t, errors.New("error: BadRequest - resolver is nil")
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"))
 	}
 	body, status := resolver.Get(name, version)
-	if status != nil {
+	if !status.OK() {
 		return t, status
 	}
 	switch ptr := any(&t).(type) {
 	case *string:
-		t1, err := Resolve[text](name, version, resolver)
-		if err != nil {
-			return t, err
+		t1, status1 := Resolve[text](name, version, resolver)
+		if !status1.OK() {
+			return t, status1
 		}
 		*ptr = t1.Value
 	case *[]byte:
@@ -172,10 +201,14 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, error) {
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			return t, errors.New(fmt.Sprintf("error: JsonEncode - %v", err))
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)))
 		}
 	}
-	return t, nil
+	return t, messaging.StatusOK()
+}
+
+type text struct {
+	Value string
 }
 
 /*
