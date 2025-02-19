@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/behavioral-ai/core/messaging"
 	"net/http"
 )
 
@@ -11,10 +12,19 @@ import (
 
 const (
 	ResourceUri = "urn:collective"
-	AgentNID    = "agent"  // Restricted NID/Domain
-	ThingNSS    = "thing"  // urn:{NID}:thing:{module-package}:{type}
-	AspectNSS   = "aspect" // urn:{NID}:aspect:{path}
+	AgentNSS    = "agent"    // urn:{NID}:thing:{module-package}:{type}
+	ThingNSS    = "thing"    // urn:{NID}:thing:{module-package}:{type}
+	AspectNSS   = "aspect"   // urn:{NID}:aspect:{path}
+	FrameNSS    = "frame"    // urn:{NID}:frame:{path}
+	LikenessNSS = "likeness" // urn:{NID}:likeness:{path}
+	GuidanceNSS = "guidance" // urn:{NID}:guidance:{path}
+	EventNSS    = "event"    // urn:{NID}:event:{path}
 
+)
+
+// Append -
+var (
+	Append = newAppender()
 )
 
 // Relation -
@@ -23,41 +33,53 @@ type Relation struct {
 	Thing2 string `json:"thing2"`
 }
 
-// Appender - append
-type Appender struct {
-	Thing    func(name, author, tags string) error
-	Relation func(name1, name2, author, tags string) error
-
-	Frame    func(name, author, tags string, aspects []Relation, version int) error
-	Likeness func(name, author, tags string, terms map[string]string) error
-	Guidance func(name, author, tags string, text string) error
-	Activity func(agent, event, location string, terms map[string]string) error
+// Appender - collective append
+type Appender interface {
+	Thing(name, author, tags string) error
+	Relation(name1, name2, author, tags string) error
+	Frame(name, author, tags string, aspects []Relation, version int) error
+	Likeness(name, author, tags string, terms map[string]string) error
+	Guidance(name, author, tags string, text string) error
+	Activity(agent messaging.Agent, event, location string, terms map[string]string) error
 }
 
-// Append -
-var Append = func() *Appender {
-	return &Appender{
-		Thing: func(name, author, tags string) error {
-			return errors.New("error: not implemented")
-		},
-		Relation: func(name1, name2, author, tags string) error {
-			return errors.New("error: not implemented")
-		},
-		Frame: func(name, author, tags string, aspects []Relation, version int) error {
-			return errors.New("error: not implemented")
-		},
-		Likeness: func(name, author, tags string, terms map[string]string) error {
-			return errors.New("error: not implemented")
-		},
-		Guidance: func(name, author, tags, text string) error {
-			return errors.New("error: not implemented")
-		},
+type appender struct{}
 
-		Activity: func(agent, event, location string, terms map[string]string) error {
-			return errors.New("error: not implemented")
-		},
-	}
-}()
+// newAppender -
+func newAppender() Appender {
+	a := new(appender)
+	return a
+}
+
+// Thing - append a thing
+func (a *appender) Thing(name, author, tags string) error {
+	return errors.New("error: not implemented")
+}
+
+// Relation - append a relation
+func (a *appender) Relation(name1, name2, author, tags string) error {
+	return errors.New("error: not implemented")
+}
+
+// Frame - append a frame
+func (a *appender) Frame(name, author, tags string, aspects []Relation, version int) error {
+	return errors.New("error: not implemented")
+}
+
+// Likeness - append a likeness
+func (a *appender) Likeness(name, author, tags string, terms map[string]string) error {
+	return errors.New("error: not implemented")
+}
+
+// Guidance - append guidance
+func (a *appender) Guidance(name, author, tags, text string) error {
+	return errors.New("error: not implemented")
+}
+
+// Activity - append activity
+func (a *appender) Activity(agent messaging.Agent, event, location string, terms map[string]string) error {
+	return errors.New("error: not implemented")
+}
 
 // Resolver -
 var (
