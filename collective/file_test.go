@@ -113,7 +113,7 @@ func _ExampleFileLoad() {
 }
 
 func notifyFunc(status *messaging.Status) {
-	fmt.Printf("status: %v", status)
+	fmt.Printf("status: %v\n", status)
 }
 
 func ExampleEphemeralLoad() {
