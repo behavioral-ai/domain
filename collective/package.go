@@ -40,7 +40,7 @@ type Appender interface {
 	Frame(name, author, tags string, aspects []Relation, version int) *messaging.Status
 	Likeness(name, author, tags string, terms map[string]string) *messaging.Status
 	Guidance(name, author, tags string, text string) *messaging.Status
-	Activity(agent messaging.Agent, event, location string, terms map[string]string) *messaging.Status
+	Activity(agent messaging.Agent, event, source string, terms map[string]string) *messaging.Status
 }
 
 type appender struct{}
