@@ -17,7 +17,7 @@ var Assign = func() *Assignments {
 		All: func(h messaging.Notifier, origin common.Origin) ([]HostEntry, error) {
 			entry, status := GetRegion(origin)
 			if status != nil {
-				h.Notify(status)
+				h.Notify(messaging.NewStatusError(messaging.StatusIOError, status))
 			}
 			return entry, status
 		},
