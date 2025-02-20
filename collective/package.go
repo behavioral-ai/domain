@@ -33,7 +33,7 @@ type Appender interface {
 	Relation(name1, name2, author string) *messaging.Status
 	Frame(name, author string, contains []string, version int) *messaging.Status
 	Guidance(name, author, text string, related []string) *messaging.Status
-	Activity(agent messaging.Agent, event, source string, terms map[string]string) *messaging.Status
+	Activity(agent messaging.Agent, event, source string, content any)
 }
 
 type appender struct{}
@@ -65,9 +65,10 @@ func (a *appender) Guidance(name, author, text string, related []string) *messag
 }
 
 // Activity - append activity
-func (a *appender) Activity(agent messaging.Agent, event, location string, terms map[string]string) *messaging.Status {
-	fmt.Printf("agent: %v event: %v location: %v terms:%v", agent, event, location, terms)
-	return messaging.StatusOK() //errors.New("error: not implemented")
+func (a *appender) Activity(agent messaging.Agent, event, location string, content any) {
+	// if there is an error, use the agents notify.
+	fmt.Printf("agent: %v event: %v location: %v", agent, event, location) //, terms)
+	//return messaging.StatusOK() //errors.New("error: not implemented")
 }
 
 // Resolver - collective resolution in the real world
