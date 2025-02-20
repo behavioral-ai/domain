@@ -1,6 +1,7 @@
 package guidance
 
 import (
+	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/domain/common"
 )
 
@@ -19,12 +20,12 @@ const (
 	EastZoneB  = "e-b"
 )
 
-func GetRegion(origin common.Origin) ([]HostEntry, error) {
+func GetRegion(origin common.Origin) ([]HostEntry, *messaging.Status) {
 	if origin.Region == WestRegion {
-		return westData, nil
+		return westData, messaging.StatusOK()
 	}
 	if origin.Region == CentralRegion {
-		return centralData, nil
+		return centralData, messaging.StatusOK()
 	}
-	return []HostEntry{}, nil
+	return []HostEntry{}, messaging.StatusOK()
 }
