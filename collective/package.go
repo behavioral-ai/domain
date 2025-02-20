@@ -27,19 +27,12 @@ var (
 	Append = newHttpAppender()
 )
 
-// Relation -
-type Relation struct {
-	Thing1 string `json:"thing1"`
-	Thing2 string `json:"thing2"`
-}
-
 // Appender - collective append
 type Appender interface {
-	Thing(name, author, tags string) *messaging.Status
-	Relation(name1, name2, author, tags string) *messaging.Status
-	Frame(name, author, tags string, aspects []Relation, version int) *messaging.Status
-	Likeness(name, author, tags string, terms map[string]string) *messaging.Status
-	Guidance(name, author, tags string, text string) *messaging.Status
+	Thing(name, author string, related []string) *messaging.Status
+	Relation(name1, name2, author string) *messaging.Status
+	Frame(name, author string, contains []string, version int) *messaging.Status
+	Guidance(name, author, text string, related []string) *messaging.Status
 	Activity(agent messaging.Agent, event, source string, terms map[string]string) *messaging.Status
 }
 
@@ -52,27 +45,22 @@ func newHttpAppender() Appender {
 }
 
 // Thing - append a thing
-func (a *appender) Thing(name, author, tags string) *messaging.Status {
+func (a *appender) Thing(name, author string, related []string) *messaging.Status {
 	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Relation - append a relation
-func (a *appender) Relation(name1, name2, author, tags string) *messaging.Status {
+func (a *appender) Relation(name1, name2, author string) *messaging.Status {
 	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Frame - append a frame
-func (a *appender) Frame(name, author, tags string, aspects []Relation, version int) *messaging.Status {
-	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
-}
-
-// Likeness - append a likeness
-func (a *appender) Likeness(name, author, tags string, terms map[string]string) *messaging.Status {
+func (a *appender) Frame(name, author string, contains []string, version int) *messaging.Status {
 	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
 // Guidance - append guidance
-func (a *appender) Guidance(name, author, tags, text string) *messaging.Status {
+func (a *appender) Guidance(name, author, text string, related []string) *messaging.Status {
 	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
 }
 
