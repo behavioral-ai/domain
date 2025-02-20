@@ -7,14 +7,16 @@ import (
 )
 
 const (
-	RegionKey                = "region"
-	ZoneKey                  = "zone"
-	SubZoneKey               = "sub-zone"
-	HostKey                  = "host"
-	InstanceIdKey            = "id"
-	RouteKey                 = "route"
-	RegionZoneHostFmt        = "%v:%v.%v.%v"
-	RegionZoneSubZoneHostFmt = "%v:%v.%v.%v.%v"
+	RegionKey                 = "region"
+	ZoneKey                   = "zone"
+	SubZoneKey                = "sub-zone"
+	HostKey                   = "host"
+	InstanceIdKey             = "id"
+	RouteKey                  = "route"
+	RegionZoneHostFmt         = "%v:%v.%v.%v"
+	RegionZoneSubZoneHostFmt  = "%v:%v.%v.%v.%v"
+	RegionZoneHostFmt2        = "%v.%v.%v"
+	RegionZoneSubZoneHostFmt2 = "%v.%v.%v.%v"
 )
 
 // Origin - location
@@ -47,6 +49,19 @@ func (o Origin) Uri(class string) string {
 		uri = fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
 	} else {
 		uri = fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
+	}
+	if o.Route != "" {
+		uri += "." + o.Route
+	}
+	return uri
+}
+
+func (o Origin) String() string {
+	var uri string
+	if o.SubZone == "" {
+		uri = fmt.Sprintf(RegionZoneHostFmt2, o.Region, o.Zone, o.Host)
+	} else {
+		uri = fmt.Sprintf(RegionZoneSubZoneHostFmt2, o.Region, o.Zone, o.SubZone, o.Host)
 	}
 	if o.Route != "" {
 		uri += "." + o.Route
