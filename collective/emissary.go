@@ -8,16 +8,17 @@ import (
 
 // emissary attention
 func emissaryAttend(agent *agentT) {
-	paused := false
+	var paused = false
 	if paused {
 	}
 	ticker := messaging.NewPrimaryTicker(agent.duration)
+	agent.dispatch(agent.emissary, messaging.StartupEvent)
 
 	ticker.Start(-1)
 	for {
 		select {
 		case <-ticker.C():
-
+			agent.dispatch(ticker, messaging.TickEvent)
 		default:
 		}
 		select {
@@ -29,11 +30,12 @@ func emissaryAttend(agent *agentT) {
 				paused = false
 			case messaging.ShutdownEvent:
 				ticker.Stop()
+				agent.dispatch(agent.emissary, msg.Event())
 				return
-			//case messaging.DataChangeEvent:
 			default:
 				agent.Notify(messaging.NewStatusError(messaging.StatusInvalidContent, errors.New(fmt.Sprintf("%v %v", agent.Uri(), msg.Event())))) //messaging.EventError(agent.Uri(), msg))
 			}
+			agent.dispatch(agent.emissary, msg.Event())
 		default:
 		}
 	}

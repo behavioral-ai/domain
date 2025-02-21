@@ -19,13 +19,14 @@ type agentT struct {
 	duration  time.Duration
 	cache     *contentT
 	resolver  resolutionFunc
-	notifyFn  messaging.NotifyFunc
+	notifier  messaging.NotifyFunc
 
-	emissary *messaging.Channel
-	master   *messaging.Channel
+	emissary   *messaging.Channel
+	master     *messaging.Channel
+	dispatcher messaging.Dispatcher
 }
 
-func newContentAgent(ephemeral bool, notify messaging.NotifyFunc) *agentT {
+func newContentAgent(ephemeral bool, notifier messaging.NotifyFunc, dispatcher messaging.Dispatcher) *agentT {
 	a := new(agentT)
 	a.ephemeral = ephemeral
 	a.agentId = agentUri
@@ -36,9 +37,10 @@ func newContentAgent(ephemeral bool, notify messaging.NotifyFunc) *agentT {
 	} else {
 		a.resolver = httpResolution
 	}
-	a.notifyFn = notify
+	a.notifier = notifier
 	a.emissary = messaging.NewEmissaryChannel(true)
 	a.master = messaging.NewMasterChannel(true)
+	a.dispatcher = dispatcher
 	return a
 }
 
@@ -47,6 +49,9 @@ func (a *agentT) String() string { return a.Uri() }
 
 // Uri - agent identifier
 func (a *agentT) Uri() string { return a.agentId }
+
+// Name - agent name
+func (a *agentT) Name() string { return a.agentId }
 
 // Message - message the agent
 func (a *agentT) Message(m *messaging.Message) {
@@ -65,8 +70,8 @@ func (a *agentT) Message(m *messaging.Message) {
 
 // Notify - notifier
 func (a *agentT) Notify(status *messaging.Status) {
-	if a.notifyFn != nil {
-		a.notifyFn(status)
+	if a.notifier != nil {
+		a.notifier(status)
 	}
 }
 
@@ -98,6 +103,19 @@ func (a *agentT) Shutdown() {
 
 func (a *agentT) IsFinalized() bool {
 	return true
+}
+
+func (a *agentT) dispatch(channel any, event string) {
+	if a.dispatcher == nil || channel == nil {
+		return
+	}
+	if ch, ok := channel.(*messaging.Channel); ok {
+		a.dispatcher.Dispatch(a, ch.Name(), event)
+		return
+	}
+	if t, ok := channel.(*messaging.Ticker); ok {
+		a.dispatcher.Dispatch(a, t.Name(), event)
+	}
 }
 
 func (a *agentT) load(dir string) *messaging.Status {

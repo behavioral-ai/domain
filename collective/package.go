@@ -110,14 +110,14 @@ type resolution struct {
 
 func newHttpResolver() Resolution {
 	r := new(resolution)
-	r.agent = newContentAgent(false, nil)
+	r.agent = newContentAgent(false, nil, nil)
 	return r
 }
 
 // NewEphemeralResolver - in memory resolver
 func NewEphemeralResolver(dir string, notify messaging.NotifyFunc) (Resolution, *messaging.Status) {
 	r := new(resolution)
-	r.agent = newContentAgent(true, notify)
+	r.agent = newContentAgent(true, notify, nil)
 	err := r.agent.load(dir)
 	r.agent.Run()
 	return r, err
