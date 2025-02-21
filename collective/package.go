@@ -77,9 +77,9 @@ var (
 )
 
 const (
-	ContentMapped    = "mapped"
-	ContentBinary    = "binary"
-	ContentUndefined = "undefined"
+	ContentMapped     = "mapped"
+	ContentBinary     = "binary"
+	ContentNotDefined = "undefined"
 )
 
 // ResolutionKey -
