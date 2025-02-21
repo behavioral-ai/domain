@@ -33,7 +33,7 @@ func ExampleEphemeralResolver() {
 	r, status := NewEphemeralResolver("", notifyFunc)
 	fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
-	status = r.Put(name, "", s, 1)
+	status = r.PutContent(name, "", s, 1)
 	fmt.Printf("test: Resolver.Put() -> [status:%v]\n", status)
 
 	v, status1 := Resolve[string](name, 1, r)

@@ -104,8 +104,10 @@ func StartupResolver(uri []string, do HttpExchange) {
 
 // Resolution - in the real world
 type Resolution interface {
-	Get(name string, version int) ([]byte, *messaging.Status)
-	Put(name, author string, content any, version int) *messaging.Status
+	GetContent(name string, version int) ([]byte, *messaging.Status)
+	PutContent(name, author string, content any, version int) *messaging.Status
+	GetMap(name string) (map[string]string, *messaging.Status)
+	PutMap(name, author string, m map[string]string) *messaging.Status
 }
 
 type resolution struct {
@@ -129,18 +131,18 @@ func NewEphemeralResolver(dir string, notify messaging.NotifyFunc) (Resolution, 
 	return r, err
 }
 
-// Get - resolution get
-func (r *resolution) Get(name string, version int) ([]byte, *messaging.Status) {
+// GetContent - resolution get
+func (r *resolution) GetContent(name string, version int) ([]byte, *messaging.Status) {
 	if name == "" || version <= 0 {
 		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)))
 		r.agent.Notify(status)
 		return nil, status
 	}
-	return r.agent.resolverGet(name, version)
+	return r.agent.resolverGetContent(name, version)
 }
 
-// Put - resolution put
-func (r *resolution) Put(name, author string, content any, version int) *messaging.Status {
+// PutContent - resolution put
+func (r *resolution) PutContent(name, author string, content any, version int) *messaging.Status {
 	if name == "" || content == nil || version <= 0 {
 		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version)))
 		r.agent.Notify(status)
@@ -171,7 +173,27 @@ func (r *resolution) Put(name, author string, content any, version int) *messagi
 			return status
 		}
 	}
-	return r.agent.resolverPut(name, author, buf, version)
+	return r.agent.resolverPutContent(name, author, buf, version)
+}
+
+// GetMap - resolution get
+func (r *resolution) GetMap(name string) (map[string]string, *messaging.Status) {
+	if name == "" {
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name is empty")))
+		r.agent.Notify(status)
+		return nil, status
+	}
+	return nil, messaging.StatusNotFound()
+}
+
+// PutMap - resolution put
+func (r *resolution) PutMap(name, author string, m map[string]string) *messaging.Status {
+	if name == "" || m == nil {
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument, name or map is empty")))
+		r.agent.Notify(status)
+		return status
+	}
+	return messaging.StatusBadRequest()
 }
 
 // Resolve - generic typed resolution
@@ -181,7 +203,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	if resolver == nil {
 		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"))
 	}
-	body, status := resolver.Get(name, version)
+	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
 		return t, status
 	}
