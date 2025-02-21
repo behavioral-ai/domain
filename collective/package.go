@@ -76,6 +76,12 @@ var (
 	Resolver = newHttpResolver()
 )
 
+const (
+	ContentMapped    = "mapped"
+	ContentBinary    = "binary"
+	ContentUndefined = "undefined"
+)
+
 // ResolutionKey -
 type ResolutionKey struct {
 	Name    string `json:"name"`
