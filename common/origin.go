@@ -15,7 +15,7 @@ const (
 	RouteKey                  = "route"
 	RegionZoneHostFmt         = "%v:%v.%v.%v"
 	RegionZoneSubZoneHostFmt  = "%v:%v.%v.%v.%v"
-	RegionZoneHostFmt2        = "%v.%v.%v"
+	uriFmt                    = "%v:%v"
 	RegionZoneSubZoneHostFmt2 = "%v.%v.%v.%v"
 )
 
@@ -44,16 +44,19 @@ func (o Origin) Tag() string {
 }
 
 func (o Origin) Uri(class string) string {
-	var uri string
-	if o.SubZone == "" {
-		uri = fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
-	} else {
-		uri = fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
-	}
-	if o.Route != "" {
-		uri += "." + o.Route
-	}
-	return uri
+	/*
+		var uri string
+		if o.SubZone == "" {
+			uri = fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
+		} else {
+			uri = fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
+		}
+		if o.Route != "" {
+			uri += "." + o.Route
+		}
+
+	*/
+	return fmt.Sprintf(uriFmt, class, o)
 }
 
 func (o Origin) String() string {
