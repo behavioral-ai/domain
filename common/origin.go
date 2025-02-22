@@ -29,7 +29,7 @@ type Origin struct {
 	InstanceId string `json:"instance-id"`
 }
 
-func (o Origin) Tag() string {
+func (o Origin) Tag2() string {
 	tag := o.Region
 	if o.Zone != "" {
 		tag += ":" + o.Zone
@@ -44,18 +44,6 @@ func (o Origin) Tag() string {
 }
 
 func (o Origin) Uri(class string) string {
-	/*
-		var uri string
-		if o.SubZone == "" {
-			uri = fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
-		} else {
-			uri = fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
-		}
-		if o.Route != "" {
-			uri += "." + o.Route
-		}
-
-	*/
 	return fmt.Sprintf(uriFmt, class, o)
 }
 
@@ -74,13 +62,6 @@ func (o Origin) String() string {
 	if o.Route != "" {
 		uri += "." + o.Route
 	}
-	/*
-		if o.SubZone == "" {
-			uri = fmt.Sprintf(RegionZoneHostFmt2, o.Region, o.Zone, o.Host)
-		} else {
-			uri = fmt.Sprintf(RegionZoneSubZoneHostFmt2, o.Region, o.Zone, o.SubZone, o.Host)
-		}
-	*/
 	return uri
 }
 

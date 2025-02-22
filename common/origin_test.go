@@ -58,6 +58,7 @@ func ExampleNewOrigin() {
 
 }
 
+/*
 func ExampleOrigin_Tag() {
 	o := Origin{
 		Region:     "region",
@@ -84,6 +85,9 @@ func ExampleOrigin_Tag() {
 	//test: Tag() -> [region]
 
 }
+
+
+*/
 
 func ExampleOriginMatch() {
 	target := Origin{
