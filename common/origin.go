@@ -57,15 +57,27 @@ func (o Origin) Uri(class string) string {
 }
 
 func (o Origin) String() string {
-	var uri string
-	if o.SubZone == "" {
-		uri = fmt.Sprintf(RegionZoneHostFmt2, o.Region, o.Zone, o.Host)
-	} else {
-		uri = fmt.Sprintf(RegionZoneSubZoneHostFmt2, o.Region, o.Zone, o.SubZone, o.Host)
+	var uri = o.Region
+
+	if o.Zone != "" {
+		uri += "." + o.Zone
+	}
+	if o.SubZone != "" {
+		uri += "." + o.SubZone
+	}
+	if o.Host != "" {
+		uri += "." + o.Host
 	}
 	if o.Route != "" {
 		uri += "." + o.Route
 	}
+	/*
+		if o.SubZone == "" {
+			uri = fmt.Sprintf(RegionZoneHostFmt2, o.Region, o.Zone, o.Host)
+		} else {
+			uri = fmt.Sprintf(RegionZoneSubZoneHostFmt2, o.Region, o.Zone, o.SubZone, o.Host)
+		}
+	*/
 	return uri
 }
 

@@ -27,12 +27,34 @@ func ExampleNewOrigin() {
 		Route:      "route",
 		InstanceId: "",
 	}
-	values := NewValues(o)
-	o = NewOrigin(values)
+	//values := NewValues(o)
+	//o = NewOrigin(values)
+	fmt.Printf("test: NewOrigin() -> [%v]\n", o)
+
+	o.Zone = ""
+	fmt.Printf("test: NewOrigin() -> [%v]\n", o)
+
+	o.Zone = "zone"
+	o.SubZone = ""
+	fmt.Printf("test: NewOrigin() -> [%v]\n", o)
+
+	o.Zone = "zone"
+	o.SubZone = "sub-zone"
+	o.Host = ""
+	fmt.Printf("test: NewOrigin() -> [%v]\n", o)
+
+	o.Zone = "zone"
+	o.SubZone = "sub-zone"
+	o.Host = "host"
+	o.Route = ""
 	fmt.Printf("test: NewOrigin() -> [%v]\n", o)
 
 	//Output:
 	//test: NewOrigin() -> [region.zone.sub-zone.host.route]
+	//test: NewOrigin() -> [region.sub-zone.host.route]
+	//test: NewOrigin() -> [region.zone.host.route]
+	//test: NewOrigin() -> [region.zone.sub-zone.route]
+	//test: NewOrigin() -> [region.zone.sub-zone.host]
 
 }
 
