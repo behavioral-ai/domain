@@ -92,25 +92,12 @@ func (a *agentT) Shutdown() {
 	a.master.Send(msg)
 }
 
-// Notify - notifier
 func (a *agentT) notify(status *messaging.Status) *messaging.Status {
-	if a.notifier != nil {
-		a.notifier(status)
-	}
-	return status
+	return messaging.Notify(a.notifier, status)
 }
 
 func (a *agentT) dispatch(channel any, event string) {
-	if a.dispatcher == nil || channel == nil {
-		return
-	}
-	if ch, ok := channel.(*messaging.Channel); ok {
-		a.dispatcher.Dispatch(a, ch.Name(), event)
-		return
-	}
-	if t, ok := channel.(*messaging.Ticker); ok {
-		a.dispatcher.Dispatch(a, t.Name(), event)
-	}
+	messaging.Dispatch(a, a.dispatcher, channel, event)
 }
 
 func (a *agentT) load(dir string) *messaging.Status {
