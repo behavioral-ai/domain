@@ -12,13 +12,13 @@ import (
 
 const (
 	ResourceUri = "urn:collective"
-	AgentNSS    = "agent"     // urn:{NID}:thing:{module-package}:{type}
-	ThingNSS    = "thing"     // urn:{NID}:thing:{module-package}:{type}
-	AspectNSS   = "aspect"    // urn:{NID}:aspect:{path}
-	FrameNSS    = "frame"     // urn:{NID}:frame:{path}
-	LikenessNSS = "likeness"  // urn:{NID}:likeness:{path}
-	GuidanceNSS = "guidance2" // urn:{NID}:guidance2:{path}
-	EventNSS    = "event"     // urn:{NID}:event:{path}
+	AgentNSS    = "agent"    // urn:{NID}:thing:{module-package}:{type}
+	ThingNSS    = "thing"    // urn:{NID}:thing:{module-package}:{type}
+	AspectNSS   = "aspect"   // urn:{NID}:aspect:{path}
+	FrameNSS    = "frame"    // urn:{NID}:frame:{path}
+	LikenessNSS = "likeness" // urn:{NID}:likeness:{path}
+	GuidanceNSS = "guidance" // urn:{NID}:guidance2:{path}
+	EventNSS    = "event"    // urn:{NID}:event:{path}
 
 )
 
