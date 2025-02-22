@@ -3,7 +3,7 @@ package collective
 import (
 	"fmt"
 	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/core/test"
 	"github.com/behavioral-ai/domain/testrsc"
 	"strings"
 )
@@ -98,7 +98,7 @@ func _ExampleFileLoad() {
 	name2 := "resiliency:thing/operative/agent/threshold"
 
 	c := newContentCache()
-	err := loadContent(notifyFunc, c, dir)
+	err := loadContent(test.Notify, c, dir)
 	fmt.Printf("test: loadContent() -> [err:%v]\n", err)
 
 	buf, status := c.get(name1, 1)
@@ -112,16 +112,12 @@ func _ExampleFileLoad() {
 
 }
 
-func notifyFunc(status *messaging.Status) {
-	fmt.Printf("status: %v\n", status)
-}
-
 func ExampleEphemeralLoad() {
 	name1 := "resiliency:thing/operative/agent/gradient"
 	name2 := "resiliency:thing/operative/agent/threshold"
 	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
 
-	r, status := NewEphemeralResolver(dir, notifyFunc)
+	r, status := NewEphemeralResolver(dir, test.Notify)
 	fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
 	v, status1 := Resolve[[]lookup](name1, 1, r)

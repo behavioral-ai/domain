@@ -3,6 +3,7 @@ package collective
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/behavioral-ai/core/test"
 )
 
 func ExampleResolveString() {
@@ -30,7 +31,7 @@ func ExampleEphemeralResolver() {
 	name := "test:thing/string"
 	s := "test Ephemeral resolver"
 
-	r, status := NewEphemeralResolver("", notifyFunc)
+	r, status := NewEphemeralResolver("", test.Notify)
 	fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
 	status = r.PutContent(name, "", s, 1)

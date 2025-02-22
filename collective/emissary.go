@@ -33,7 +33,7 @@ func emissaryAttend(agent *agentT) {
 				agent.dispatch(agent.emissary, msg.Event())
 				return
 			default:
-				agent.Notify(messaging.NewStatusError(messaging.StatusInvalidContent, errors.New(fmt.Sprintf("%v %v", agent.Uri(), msg.Event())))) //messaging.EventError(agent.Uri(), msg))
+				agent.notify(messaging.NewStatusError(messaging.StatusInvalidContent, errors.New(fmt.Sprintf("%v %v", agent.Uri(), msg.Event())))) //messaging.EventError(agent.Uri(), msg))
 			}
 			agent.dispatch(agent.emissary, msg.Event())
 		default:

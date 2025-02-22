@@ -135,7 +135,7 @@ func NewEphemeralResolver(dir string, notify messaging.NotifyFunc) (Resolution, 
 func (r *resolution) GetContent(name string, version int) ([]byte, *messaging.Status) {
 	if name == "" || version <= 0 {
 		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)))
-		r.agent.Notify(status)
+		r.agent.notify(status)
 		return nil, status
 	}
 	return r.agent.resolverGetContent(name, version)
@@ -145,7 +145,7 @@ func (r *resolution) GetContent(name string, version int) ([]byte, *messaging.St
 func (r *resolution) PutContent(name, author string, content any, version int) *messaging.Status {
 	if name == "" || content == nil || version <= 0 {
 		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version)))
-		r.agent.Notify(status)
+		r.agent.notify(status)
 		return status
 	}
 	var buf []byte
@@ -158,7 +158,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 		buf, err = json.Marshal(v)
 		if err != nil {
 			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err)
-			r.agent.Notify(status)
+			r.agent.notify(status)
 			return status
 		}
 	case []byte:
@@ -169,7 +169,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 		buf, err = json.Marshal(ptr)
 		if err != nil {
 			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err)
-			r.agent.Notify(status)
+			r.agent.notify(status)
 			return status
 		}
 	}
@@ -180,7 +180,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 func (r *resolution) GetMap(name string) (map[string]string, *messaging.Status) {
 	if name == "" {
 		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name is empty")))
-		r.agent.Notify(status)
+		r.agent.notify(status)
 		return nil, status
 	}
 	return nil, messaging.StatusNotFound()
@@ -190,7 +190,7 @@ func (r *resolution) GetMap(name string) (map[string]string, *messaging.Status) 
 func (r *resolution) PutMap(name, author string, m map[string]string) *messaging.Status {
 	if name == "" || m == nil {
 		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument, name or map is empty")))
-		r.agent.Notify(status)
+		r.agent.notify(status)
 		return status
 	}
 	return messaging.StatusBadRequest()

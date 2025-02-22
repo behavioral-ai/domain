@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	Name            = "resiliency:agent/domain/collective"
 	agentUri        = "root:agent/domain/collective/content"
 	defaultDuration = time.Second * 10
 )
@@ -19,10 +20,10 @@ type agentT struct {
 	duration  time.Duration
 	cache     *contentT
 	resolver  resolutionFunc
-	notifier  messaging.NotifyFunc
 
 	emissary   *messaging.Channel
 	master     *messaging.Channel
+	notifier   messaging.NotifyFunc
 	dispatcher messaging.Dispatcher
 }
 
@@ -51,7 +52,7 @@ func (a *agentT) String() string { return a.Uri() }
 func (a *agentT) Uri() string { return a.agentId }
 
 // Name - agent name
-func (a *agentT) Name() string { return a.agentId }
+func (a *agentT) Name() string { return Name }
 
 // Message - message the agent
 func (a *agentT) Message(m *messaging.Message) {
@@ -65,13 +66,6 @@ func (a *agentT) Message(m *messaging.Message) {
 		a.master.Send(m)
 	default:
 		a.emissary.Send(m)
-	}
-}
-
-// Notify - notifier
-func (a *agentT) Notify(status *messaging.Status) {
-	if a.notifier != nil {
-		a.notifier(status)
 	}
 }
 
@@ -98,8 +92,12 @@ func (a *agentT) Shutdown() {
 	a.master.Send(msg)
 }
 
-func (a *agentT) IsFinalized() bool {
-	return true
+// Notify - notifier
+func (a *agentT) notify(status *messaging.Status) *messaging.Status {
+	if a.notifier != nil {
+		a.notifier(status)
+	}
+	return status
 }
 
 func (a *agentT) dispatch(channel any, event string) {
@@ -119,7 +117,7 @@ func (a *agentT) load(dir string) *messaging.Status {
 	if dir == "" {
 		return messaging.StatusOK()
 	}
-	err := loadContent(a.Notify, a.cache, dir)
+	err := loadContent(a.notify, a.cache, dir)
 	if err != nil {
 		return messaging.StatusBadRequest()
 	}
@@ -132,17 +130,17 @@ func (a *agentT) resolverGetContent(name string, version int) ([]byte, *messagin
 		return buf, status
 	}
 	if status.Code == http.StatusBadRequest {
-		a.Notify(status)
+		a.notify(status)
 		return nil, status
 	}
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
-		a.Notify(status)
+		a.notify(status)
 		return nil, status
 	}
 	status = a.cache.put(name, buf, version)
 	if !status.OK() {
-		a.Notify(status)
+		a.notify(status)
 		return nil, status
 	}
 	return buf, messaging.StatusOK()
@@ -151,12 +149,12 @@ func (a *agentT) resolverGetContent(name string, version int) ([]byte, *messagin
 func (a *agentT) resolverPutContent(name, author string, buf []byte, version int) *messaging.Status {
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
-		a.Notify(status)
+		a.notify(status)
 		return status
 	}
 	status = a.cache.put(name, buf, version)
 	if !status.OK() {
-		a.Notify(status)
+		a.notify(status)
 	}
 	return status
 }
