@@ -38,9 +38,10 @@ func newContentAgent(ephemeral bool, notifier messaging.NotifyFunc, dispatcher m
 	} else {
 		a.resolver = httpResolution
 	}
-	a.notifier = notifier
+
 	a.emissary = messaging.NewEmissaryChannel(true)
 	a.master = messaging.NewMasterChannel(true)
+	a.notifier = notifier
 	a.dispatcher = dispatcher
 	return a
 }
