@@ -1,4 +1,4 @@
-package guidance
+package guidance2
 
 import (
 	"github.com/behavioral-ai/core/messaging"

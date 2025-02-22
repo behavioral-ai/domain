@@ -1,5 +1,0 @@
-package guidance
-
-func testing() {
-
-}
