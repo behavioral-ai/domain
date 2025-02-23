@@ -65,10 +65,7 @@ func (a *appender) Guidance(name, author, text string, related []string) *messag
 
 // Resolver - collective resolution in the real world
 var (
-	Resolver = func() Resolution {
-		r := newHttpResolver()
-		return r
-	}
+	Resolver = newHttpResolver()
 )
 
 // ResolutionKey -
