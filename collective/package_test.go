@@ -23,7 +23,7 @@ func ExampleResolveString() {
 
 	//Output:
 	//test: newContentCache.put(1) -> [status:OK]
-	//test: Resolve[text]() -> [status:Bad Request [error: BadRequest - resolver is nil]] [{}]
+	//test: Resolve[text]() -> [status:Bad Request [err:error: BadRequest - resolver is nil] [src:]] [{}]
 
 }
 
@@ -47,7 +47,6 @@ func ExampleEphemeralResolver() {
 	//test: NewEphemeralResolver() -> [status:OK]
 	//test: Resolver.Put() -> [status:OK]
 	//test: Resolve[string] -> [status:OK] [test Ephemeral resolver]
-	//status: Not Found
-	//test: Resolve[string] -> [status:Not Found] []
+	//notify-> [event:messaging:status] [msg:Not Found] [src:] [agent:]test: Resolve[string] -> [status:Not Found] []
 
 }

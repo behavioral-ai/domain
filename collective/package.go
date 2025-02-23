@@ -65,7 +65,10 @@ func (a *appender) Guidance(name, author, text string, related []string) *messag
 
 // Resolver - collective resolution in the real world
 var (
-	Resolver = newHttpResolver()
+	Resolver = func() Resolution {
+		r := newHttpResolver()
+		return r
+	}
 )
 
 // ResolutionKey -
@@ -83,6 +86,7 @@ func Startup(uri []string, do HttpExchange) {
 		if do != nil {
 			r.do = do
 		}
+		r.agent.notifier = r.Notify
 		r.agent.uri = uri
 		r.agent.Run()
 	}
