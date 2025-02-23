@@ -24,12 +24,12 @@ func newContentCache() *contentT {
 
 func (c *contentT) get(name string, version int) ([]byte, *messaging.Status) {
 	if name == "" || version <= 0 {
-		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: name \"%v\" or version \"%v\" is empty", name, version)))
+		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: name \"%v\" or version \"%v\" is empty", name, version)), "", nil)
 	}
 	key := ResolutionKey{Name: name, Version: version}
 	value, ok := c.m.Load(key)
 	if !ok {
-		return nil, messaging.NewStatusError(http.StatusNotFound, errors.New(fmt.Sprintf("error: name \"%v\" version \"%v\"", name, version)))
+		return nil, messaging.NewStatusError(http.StatusNotFound, errors.New(fmt.Sprintf("error: name \"%v\" version \"%v\"", name, version)), "", nil)
 	}
 	if value1, ok1 := value.(content); ok1 {
 		return value1.body, messaging.StatusOK()
@@ -39,7 +39,7 @@ func (c *contentT) get(name string, version int) ([]byte, *messaging.Status) {
 
 func (c *contentT) put(name string, body []byte, version int) *messaging.Status {
 	if name == "" || body == nil || version <= 0 {
-		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: name \"%v\", body \"%v\", or version \"%v\" is empty", name, body, version)))
+		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: name \"%v\", body \"%v\", or version \"%v\" is empty", name, body, version)), "", nil)
 	}
 	c.m.Store(ResolutionKey{Name: name, Version: version}, content{body: body})
 	return messaging.StatusOK()

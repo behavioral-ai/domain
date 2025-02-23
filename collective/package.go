@@ -33,7 +33,6 @@ type Appender interface {
 	Relation(name1, name2, author string) *messaging.Status
 	Frame(name, author string, contains []string, version int) *messaging.Status
 	Guidance(name, author, text string, related []string) *messaging.Status
-	Activity(agent messaging.Agent, event, source string, content any)
 }
 
 type appender struct{}
@@ -46,40 +45,27 @@ func newHttpAppender() Appender {
 
 // Thing - append a thing
 func (a *appender) Thing(name, author string, related []string) *messaging.Status {
-	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"), "", nil)
 }
 
 // Relation - append a relation
 func (a *appender) Relation(name1, name2, author string) *messaging.Status {
-	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"), "", nil)
 }
 
 // Frame - append a frame
 func (a *appender) Frame(name, author string, contains []string, version int) *messaging.Status {
-	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"), "", nil)
 }
 
-// Guidance - append guidance2
+// Guidance - append guidance
 func (a *appender) Guidance(name, author, text string, related []string) *messaging.Status {
-	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"))
-}
-
-// Activity - append activity
-func (a *appender) Activity(agent messaging.Agent, event, location string, content any) {
-	// if there is an error, use the agents notify.
-	fmt.Printf("agent: %v event: %v location: %v", agent, event, location) //, terms)
-	//return messaging.StatusOK() //errors.New("error: not implemented")
+	return messaging.NewStatusError(http.StatusBadRequest, errors.New("error: not implemented"), "", nil)
 }
 
 // Resolver - collective resolution in the real world
 var (
 	Resolver = newHttpResolver()
-)
-
-const (
-	ContentMapped     = "mapped"
-	ContentBinary     = "binary"
-	ContentNotDefined = "undefined"
 )
 
 // ResolutionKey -
@@ -91,8 +77,8 @@ type ResolutionKey struct {
 // HttpExchange - exchange type
 type HttpExchange func(r *http.Request) (*http.Response, error)
 
-// StartupResolver - run the content agent
-func StartupResolver(uri []string, do HttpExchange) {
+// Startup - run the agents
+func Startup(uri []string, do HttpExchange) {
 	if r, ok := any(Resolver).(*resolution); ok {
 		if do != nil {
 			r.do = do
@@ -102,12 +88,16 @@ func StartupResolver(uri []string, do HttpExchange) {
 	}
 }
 
+type AddActivityFunc func(agent messaging.Agent, event, source string, content any)
+
 // Resolution - in the real world
 type Resolution interface {
 	GetContent(name string, version int) ([]byte, *messaging.Status)
 	PutContent(name, author string, content any, version int) *messaging.Status
 	GetMap(name string) (map[string]string, *messaging.Status)
 	PutMap(name, author string, m map[string]string) *messaging.Status
+	AddActivity(agent messaging.Agent, event, source string, content any)
+	Notify(e messaging.Event)
 }
 
 type resolution struct {
@@ -123,7 +113,7 @@ func newHttpResolver() Resolution {
 }
 
 // NewEphemeralResolver - in memory resolver
-func NewEphemeralResolver(dir string, notify messaging.NotifyFunc) (Resolution, *messaging.Status) {
+func NewEphemeralResolver(dir string, notify messaging.NotifyFunc, add AddActivityFunc) (Resolution, *messaging.Status) {
 	r := new(resolution)
 	r.agent = newContentAgent(true, notify, nil)
 	err := r.agent.load(dir)
@@ -134,7 +124,7 @@ func NewEphemeralResolver(dir string, notify messaging.NotifyFunc) (Resolution, 
 // GetContent - resolution get
 func (r *resolution) GetContent(name string, version int) ([]byte, *messaging.Status) {
 	if name == "" || version <= 0 {
-		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)))
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", nil)
 		r.agent.notify(status)
 		return nil, status
 	}
@@ -144,7 +134,7 @@ func (r *resolution) GetContent(name string, version int) ([]byte, *messaging.St
 // PutContent - resolution put
 func (r *resolution) PutContent(name, author string, content any, version int) *messaging.Status {
 	if name == "" || content == nil || version <= 0 {
-		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version)))
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v content %v version %v", name, content, version)), "", nil)
 		r.agent.notify(status)
 		return status
 	}
@@ -157,7 +147,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 		v := text{ptr}
 		buf, err = json.Marshal(v)
 		if err != nil {
-			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err)
+			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err, "", nil)
 			r.agent.notify(status)
 			return status
 		}
@@ -168,7 +158,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 
 		buf, err = json.Marshal(ptr)
 		if err != nil {
-			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err)
+			status := messaging.NewStatusError(messaging.StatusJsonEncodeError, err, "", nil)
 			r.agent.notify(status)
 			return status
 		}
@@ -179,7 +169,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 // GetMap - resolution get
 func (r *resolution) GetMap(name string) (map[string]string, *messaging.Status) {
 	if name == "" {
-		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name is empty")))
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name is empty")), "", nil)
 		r.agent.notify(status)
 		return nil, status
 	}
@@ -189,11 +179,26 @@ func (r *resolution) GetMap(name string) (map[string]string, *messaging.Status) 
 // PutMap - resolution put
 func (r *resolution) PutMap(name, author string, m map[string]string) *messaging.Status {
 	if name == "" || m == nil {
-		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument, name or map is empty")))
+		status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument, name or map is empty")), "", nil)
 		r.agent.notify(status)
 		return status
 	}
 	return messaging.StatusBadRequest()
+}
+
+// AddActivity - resolution activity
+func (r *resolution) AddActivity(agent messaging.Agent, event, source string, content any) {
+	//if name == "" || m == nil {
+	//	status := messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument, name or map is empty")),"",nil)
+	///	r.agent.notify(status)
+	//	return status
+	//}
+	//return messaging.StatusBadRequest()
+}
+
+// Notify - resolution notify
+func (r *resolution) Notify(e messaging.Event) {
+	fmt.Printf("notify-> [name:%v] [msg:%v] [src:%v] [agent:%v]", e.Name(), e.Content(), e.Source(), e.AgentId())
 }
 
 // Resolve - generic typed resolution
@@ -201,7 +206,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	var t T
 
 	if resolver == nil {
-		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"))
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "", nil)
 	}
 	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
@@ -219,7 +224,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)))
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), "", nil)
 		}
 	}
 	return t, messaging.StatusOK()

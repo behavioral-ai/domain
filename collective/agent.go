@@ -86,15 +86,16 @@ func (a *agentT) Shutdown() {
 		return
 	}
 	a.running = false
-	msg := messaging.NewControlMessage(a.Uri(), a.Uri(), messaging.ShutdownEvent)
 	a.emissary.Enable()
-	a.emissary.Send(msg)
+	a.emissary.Send(messaging.Shutdown)
 	a.master.Enable()
-	a.master.Send(msg)
+	a.master.Send(messaging.Shutdown)
 }
 
-func (a *agentT) notify(status *messaging.Status) *messaging.Status {
-	return messaging.Notify(a.notifier, status)
+func (a *agentT) notify(e messaging.Event) {
+	if a.notifier != nil {
+		a.notifier(e)
+	}
 }
 
 func (a *agentT) dispatch(channel any, event string) {

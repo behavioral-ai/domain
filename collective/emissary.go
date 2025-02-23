@@ -1,8 +1,6 @@
 package collective
 
 import (
-	"errors"
-	"fmt"
 	"github.com/behavioral-ai/core/messaging"
 )
 
@@ -23,6 +21,7 @@ func emissaryAttend(agent *agentT) {
 		}
 		select {
 		case msg := <-agent.emissary.C:
+			agent.dispatch(agent.emissary, msg.Event())
 			switch msg.Event() {
 			case messaging.PauseEvent:
 				paused = true
@@ -33,9 +32,7 @@ func emissaryAttend(agent *agentT) {
 				agent.dispatch(agent.emissary, msg.Event())
 				return
 			default:
-				agent.notify(messaging.NewStatusError(messaging.StatusInvalidContent, errors.New(fmt.Sprintf("%v %v", agent.Uri(), msg.Event())))) //messaging.EventError(agent.Uri(), msg))
 			}
-			agent.dispatch(agent.emissary, msg.Event())
 		default:
 		}
 	}
