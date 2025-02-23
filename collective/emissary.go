@@ -6,11 +6,11 @@ import (
 
 // emissary attention
 func emissaryAttend(agent *agentT) {
+	agent.dispatch(agent.emissary, messaging.StartupEvent)
 	var paused = false
 	if paused {
 	}
 	ticker := messaging.NewPrimaryTicker(agent.duration)
-	agent.dispatch(agent.emissary, messaging.StartupEvent)
 
 	ticker.Start(-1)
 	for {

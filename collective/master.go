@@ -6,10 +6,10 @@ import (
 
 // master attention
 func masterAttend(agent *agentT) {
+	agent.dispatch(agent.emissary, messaging.StartupEvent)
 	paused := false
 	if paused {
 	}
-	agent.dispatch(agent.emissary, messaging.StartupEvent)
 
 	for {
 		select {
