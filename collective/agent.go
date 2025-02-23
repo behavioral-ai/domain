@@ -60,7 +60,7 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	switch m.To() {
+	switch m.Channel() {
 	case messaging.EmissaryChannel:
 		a.emissary.Send(m)
 	case messaging.MasterChannel:
