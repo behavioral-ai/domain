@@ -14,15 +14,15 @@ func ExampleResolveString() {
 	if err != nil {
 		fmt.Printf("test: json.Marshall() -> [err:%v]\n", err)
 	} else {
-		status := c.put(name, buf, 1)
-		fmt.Printf("test: newContentCache.put(1) -> [status:%v]\n", status)
+		//status :=
+		c.put(name, buf, 1)
+		//fmt.Printf("test: newContentCache.put(1) -> [status:%v]\n", status)
 
 		v, status1 := Resolve[text](name, 1, nil)
 		fmt.Printf("test: Resolve[text]() -> [status:%v] [%v]\n", status1, v)
 	}
 
 	//Output:
-	//test: newContentCache.put(1) -> [status:OK]
 	//test: Resolve[text]() -> [status:Bad Request [err:error: BadRequest - resolver is nil] [src:]] [{}]
 
 }
@@ -34,7 +34,7 @@ func ExampleEphemeralResolver() {
 	r := NewEphemeralResolver("", test.Notify)
 	//fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
-	status := r.PutContent(name, "", s, 1)
+	status := r.PutContent(name, "author", s, 1)
 	fmt.Printf("test: Resolver.Put() -> [status:%v]\n", status)
 
 	v, status1 := Resolve[string](name, 1, r)

@@ -1,6 +1,8 @@
 package collective
 
 import (
+	"errors"
+	"fmt"
 	"github.com/behavioral-ai/core/messaging"
 	"net/http"
 	"time"
@@ -112,47 +114,48 @@ func (a *agentT) load(dir string) *messaging.Status {
 	return messaging.StatusOK()
 }
 
-func (a *agentT) getContent(name string, version int) ([]byte, *messaging.Status) {
-	buf, status := a.cache.get(name, version)
-	if status.OK() {
-		return buf, status
+func (a *agentT) getContent(name string, version int) (buf []byte, status *messaging.Status) {
+	if name == "" || version <= 0 {
+		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", a)
 	}
-	if status.Code == http.StatusBadRequest {
-		//a.notify(status)
-		return nil, status
+	var err error
+	buf, err = a.cache.get(name, version)
+	if err == nil {
+		return buf, messaging.StatusOK()
 	}
+	// Cache miss
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
-		//a.notify(status)
+		status.AgentUri = a.Uri()
 		return nil, status
 	}
-	status = a.cache.put(name, buf, version)
-	if !status.OK() {
-		//a.notify(status)
-		return nil, status
-	}
+	a.cache.put(name, buf, version)
 	return buf, messaging.StatusOK()
 }
 
 func (a *agentT) putContent(name, author string, buf []byte, version int) *messaging.Status {
+	if name == "" || author == "" || buf == nil || version <= 0 {
+		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", a)
+	}
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
-		//a.notify(status)
+		status.AgentUri = a.Uri()
 		return status
 	}
-	status = a.cache.put(name, buf, version)
-	if !status.OK() {
-		//a.notify(status)
-	}
+	a.cache.put(name, buf, version)
 	return status
 }
 
 func (a *agentT) getMap(name string) (map[string]string, *messaging.Status) {
-
+	if name == "" {
+		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v", name)), "", a)
+	}
 	return nil, messaging.StatusNotFound()
 }
 
 func (a *agentT) putMap(name, author string, m map[string]string) *messaging.Status {
-
+	if name == "" || m == nil {
+		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v or map", name)), "", a)
+	}
 	return messaging.StatusBadRequest()
 }

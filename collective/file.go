@@ -75,10 +75,10 @@ func loadContent(cache *contentT, dir string) error {
 				//notify(messaging.NewStatusError(http.StatusBadRequest, err2, "", nil))
 				return err2
 			}
-			status := cache.put(k.Name, buf, k.Version)
-			if !status.OK() {
-				return status.Err
-			}
+			cache.put(k.Name, buf, k.Version)
+			//if !status.OK() {
+			//	return status.Err
+			//}
 		}
 		return nil
 	})
