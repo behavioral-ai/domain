@@ -75,7 +75,7 @@ type Resolution interface {
 }
 
 // NewEphemeralResolver - in memory resolver
-func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, activity AddActivityFunc) (Resolution, *messaging.Status) {
+func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, activity AddActivityFunc) Resolution {
 	r := new(resolution)
 	if notifier == nil {
 		notifier = func(e messaging.Event) {
@@ -91,9 +91,9 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, activity Ad
 	r.activity = activity
 	r.agent = newContentAgent(true, nil)
 	r.agent.notifier = notifier
-	err := r.agent.load(dir)
+	r.agent.load(dir)
 	r.agent.Run()
-	return r, err
+	return r
 }
 
 // Resolve - generic typed resolution

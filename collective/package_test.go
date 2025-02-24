@@ -31,10 +31,10 @@ func ExampleEphemeralResolver() {
 	name := "test:thing/string"
 	s := "test Ephemeral resolver"
 
-	r, status := NewEphemeralResolver("", test.Notify, nil)
-	fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
+	r := NewEphemeralResolver("", test.Notify, nil)
+	//fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
-	status = r.PutContent(name, "", s, 1)
+	status := r.PutContent(name, "", s, 1)
 	fmt.Printf("test: Resolver.Put() -> [status:%v]\n", status)
 
 	v, status1 := Resolve[string](name, 1, r)
@@ -44,7 +44,6 @@ func ExampleEphemeralResolver() {
 	fmt.Printf("test: Resolve[string] -> [status:%v] [%v]\n", status1, v)
 
 	//Output:
-	//test: NewEphemeralResolver() -> [status:OK]
 	//test: Resolver.Put() -> [status:OK]
 	//test: Resolve[string] -> [status:OK] [test Ephemeral resolver]
 	//notify-> [event:messaging:status] [msg:Not Found] [src:] [agent:]
