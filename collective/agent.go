@@ -110,7 +110,7 @@ func (a *agentT) load(dir string) *messaging.Status {
 	return messaging.StatusOK()
 }
 
-func (a *agentT) resolverGetContent(name string, version int) ([]byte, *messaging.Status) {
+func (a *agentT) getContent(name string, version int) ([]byte, *messaging.Status) {
 	buf, status := a.cache.get(name, version)
 	if status.OK() {
 		return buf, status
@@ -132,7 +132,7 @@ func (a *agentT) resolverGetContent(name string, version int) ([]byte, *messagin
 	return buf, messaging.StatusOK()
 }
 
-func (a *agentT) resolverPutContent(name, author string, buf []byte, version int) *messaging.Status {
+func (a *agentT) putContent(name, author string, buf []byte, version int) *messaging.Status {
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
 		a.notify(status)
@@ -143,4 +143,14 @@ func (a *agentT) resolverPutContent(name, author string, buf []byte, version int
 		a.notify(status)
 	}
 	return status
+}
+
+func (a *agentT) getMap(name string) (map[string]string, *messaging.Status) {
+
+	return nil, messaging.StatusNotFound()
+}
+
+func (a *agentT) putMap(name, author string, m map[string]string) *messaging.Status {
+
+	return messaging.StatusBadRequest()
 }

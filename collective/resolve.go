@@ -35,7 +35,7 @@ func (r *resolution) GetContent(name string, version int) ([]byte, *messaging.St
 		r.agent.notify(status)
 		return nil, status
 	}
-	return r.agent.resolverGetContent(name, version)
+	return r.agent.getContent(name, version)
 }
 
 // PutContent - resolution put
@@ -70,7 +70,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 			return status
 		}
 	}
-	return r.agent.resolverPutContent(name, author, buf, version)
+	return r.agent.putContent(name, author, buf, version)
 }
 
 // GetMap - resolution get
@@ -80,7 +80,7 @@ func (r *resolution) GetMap(name string) (map[string]string, *messaging.Status) 
 		r.agent.notify(status)
 		return nil, status
 	}
-	return nil, messaging.StatusNotFound()
+	return r.agent.getMap(name)
 }
 
 // PutMap - resolution put
@@ -90,7 +90,7 @@ func (r *resolution) PutMap(name, author string, m map[string]string) *messaging
 		r.agent.notify(status)
 		return status
 	}
-	return messaging.StatusBadRequest()
+	return r.agent.putMap(name, author, m)
 }
 
 // AddActivity - resolution activity
