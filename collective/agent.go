@@ -27,7 +27,7 @@ type agentT struct {
 	dispatcher messaging.Dispatcher
 }
 
-func newContentAgent(ephemeral bool, notifier messaging.NotifyFunc, dispatcher messaging.Dispatcher) *agentT {
+func newContentAgent(ephemeral bool, dispatcher messaging.Dispatcher) *agentT {
 	a := new(agentT)
 	a.ephemeral = ephemeral
 	a.agentId = agentUri
@@ -41,7 +41,6 @@ func newContentAgent(ephemeral bool, notifier messaging.NotifyFunc, dispatcher m
 
 	a.emissary = messaging.NewEmissaryChannel(true)
 	a.master = messaging.NewMasterChannel(true)
-	a.notifier = notifier
 	a.dispatcher = dispatcher
 	return a
 }
@@ -93,9 +92,7 @@ func (a *agentT) Shutdown() {
 }
 
 func (a *agentT) notify(e messaging.Event) {
-	if a.notifier != nil {
-		a.notifier(e)
-	}
+	a.notifier(e)
 }
 
 func (a *agentT) dispatch(channel any, event string) {
