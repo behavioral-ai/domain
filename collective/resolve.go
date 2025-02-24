@@ -95,7 +95,7 @@ func (r *resolution) AddActivity(agent messaging.Agent, event, source string, co
 	if r.activity != nil {
 		r.activity(agent, event, source, content)
 	} else {
-		fmt.Printf("activity -> [%v] [event:%v] [src:%v]\n", agent.Uri(), event, source)
+		// TODO: add call to append activity
 	}
 }
 
@@ -104,6 +104,6 @@ func (r *resolution) Notify(e messaging.Event) {
 	if r.notifier != nil {
 		r.notifier(e)
 	} else {
-		fmt.Printf("notify-> [name:%v] [msg:%v] [src:%v] [agent:%v]\n", e.Name(), e.Content(), e.Source(), e.AgentId())
+		// TODO: add call to notify
 	}
 }

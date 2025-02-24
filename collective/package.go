@@ -77,7 +77,17 @@ type Resolution interface {
 // NewEphemeralResolver - in memory resolver
 func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, activity AddActivityFunc) (Resolution, *messaging.Status) {
 	r := new(resolution)
+	if notifier == nil {
+		notifier = func(e messaging.Event) {
+			fmt.Printf("notify-> [name:%v] [msg:%v] [src:%v] [agent:%v]\n", e.Name(), e.Content(), e.Source(), e.AgentId())
+		}
+	}
 	r.notifier = notifier
+	if activity == nil {
+		activity = func(agent messaging.Agent, event, source string, content any) {
+			fmt.Printf("activity -> [%v] [event:%v] [src:%v] [content:%v]\n", agent.Uri(), event, source, content)
+		}
+	}
 	r.activity = activity
 	r.agent = newContentAgent(true, nil)
 	r.agent.notifier = notifier
