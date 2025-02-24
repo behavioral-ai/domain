@@ -8,13 +8,16 @@ import (
 	"net/http"
 )
 
-// ResolutionFunc - data store function
+// resolutionFunc - data store function
 type resolutionFunc func(method, name, author string, body []byte, version int) ([]byte, *messaging.Status)
+
+// addActivityFunc -
+type addActivityFunc func(agent messaging.Agent, event, source string, content any)
 
 type resolution struct {
 	do       HttpExchange
 	notifier messaging.NotifyFunc
-	activity AddActivityFunc
+	activity addActivityFunc
 	hosts    []string
 	agent    *agentT
 }

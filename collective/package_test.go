@@ -31,7 +31,7 @@ func ExampleEphemeralResolver() {
 	name := "test:thing/string"
 	s := "test Ephemeral resolver"
 
-	r := NewEphemeralResolver("", test.Notify, nil)
+	r := NewEphemeralResolver("", test.Notify)
 	//fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
 	status := r.PutContent(name, "", s, 1)

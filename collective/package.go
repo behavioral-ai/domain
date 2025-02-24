@@ -61,9 +61,6 @@ type ResolutionKey struct {
 	Version int    `json:"version"`
 }
 
-// AddActivityFunc -
-type AddActivityFunc func(agent messaging.Agent, event, source string, content any)
-
 // Resolution - in the real world
 type Resolution interface {
 	GetContent(name string, version int) ([]byte, *messaging.Status)
@@ -75,7 +72,7 @@ type Resolution interface {
 }
 
 // NewEphemeralResolver - in memory resolver
-func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, activity AddActivityFunc) Resolution {
+func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc) Resolution {
 	r := new(resolution)
 	if notifier == nil {
 		notifier = func(e messaging.Event) {
@@ -83,12 +80,9 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, activity Ad
 		}
 	}
 	r.notifier = notifier
-	if activity == nil {
-		activity = func(agent messaging.Agent, event, source string, content any) {
-			fmt.Printf("activity -> [%v] [event:%v] [src:%v] [content:%v]\n", agent.Uri(), event, source, content)
-		}
+	r.activity = func(agent messaging.Agent, event, source string, content any) {
+		//fmt.Printf("activity -> [%v] [event:%v] [src:%v] [content:%v]\n", agent.Uri(), event, source, content)
 	}
-	r.activity = activity
 	r.agent = newContentAgent(true, nil)
 	r.agent.notifier = notifier
 	r.agent.load(dir)
