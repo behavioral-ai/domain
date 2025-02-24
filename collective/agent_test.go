@@ -8,6 +8,6 @@ func ExampleNewAgent() {
 	fmt.Printf("test: newHttpAgent() -> [%v]\n", a)
 
 	//Output:
-	//test: newHttpAgent() -> [root:agent/domain/collective/content]
+	//test: newHttpAgent() -> [resiliency:agent/domain/collective/content]
 
 }

@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	Name            = "resiliency:agent/domain/collective"
-	agentUri        = "root:agent/domain/collective/content"
+	Name            = "resiliency:agent/domain/collective/content"
+	agentUri        = Name
 	defaultDuration = time.Second * 10
 )
 

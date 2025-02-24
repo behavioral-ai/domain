@@ -47,6 +47,7 @@ func ExampleEphemeralResolver() {
 	//test: NewEphemeralResolver() -> [status:OK]
 	//test: Resolver.Put() -> [status:OK]
 	//test: Resolve[string] -> [status:OK] [test Ephemeral resolver]
-	//notify-> [event:messaging:status] [msg:Not Found] [src:] [agent:]test: Resolve[string] -> [status:Not Found] []
+	//notify-> [event:messaging:status] [msg:Not Found] [src:] [agent:]
+	//test: Resolve[string] -> [status:Not Found] []
 
 }

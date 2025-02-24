@@ -199,7 +199,7 @@ func (r *resolution) AddActivity(agent messaging.Agent, event, source string, co
 
 // Notify - resolution notify
 func (r *resolution) Notify(e messaging.Event) {
-	fmt.Printf("notify-> [name:%v] [msg:%v] [src:%v] [agent:%v]", e.Name(), e.Content(), e.Source(), e.AgentId())
+	fmt.Printf("notify-> [name:%v] [msg:%v] [src:%v] [agent:%v]\n", e.Name(), e.Content(), e.Source(), e.AgentId())
 }
 
 // Resolve - generic typed resolution
