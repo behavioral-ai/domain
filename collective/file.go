@@ -58,7 +58,7 @@ func parseResolutionKey(s string) (ResolutionKey, error) {
 	return k, nil
 }
 
-func loadContent(notify messaging.NotifyFunc, cache *contentT, dir string) error {
+func loadContent(cache *contentT, dir string) error {
 	fileSystem := iox.DirFS(dir)
 	return fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -67,12 +67,12 @@ func loadContent(notify messaging.NotifyFunc, cache *contentT, dir string) error
 		if strings.Index(path, ".json") != -1 {
 			buf, err1 := fs.ReadFile(fileSystem, path)
 			if err1 != nil {
-				notify(messaging.NewStatusError(messaging.StatusIOError, err1, "", nil))
+				//notify(messaging.NewStatusError(messaging.StatusIOError, err1, "", nil))
 				return err1
 			}
 			k, err2 := parseResolutionKey(string(buf))
 			if err2 != nil {
-				notify(messaging.NewStatusError(http.StatusBadRequest, err2, "", nil))
+				//notify(messaging.NewStatusError(http.StatusBadRequest, err2, "", nil))
 				return err2
 			}
 			status := cache.put(k.Name, buf, k.Version)

@@ -98,7 +98,7 @@ func _ExampleFileLoad() {
 	name2 := "resiliency:thing/operative/agent/threshold"
 
 	c := newContentCache()
-	err := loadContent(test.Notify, c, dir)
+	err := loadContent(c, dir)
 	fmt.Printf("test: loadContent() -> [err:%v]\n", err)
 
 	buf, status := c.get(name1, 1)
@@ -127,7 +127,6 @@ func ExampleEphemeralLoad() {
 	fmt.Printf("test: Resolve[[]lookup] -> [status:%v] [%v]\n", status1, v)
 
 	//Output:
-	//test: NewEphemeralResolver() -> [status:OK]
 	//test: Resolve[[]lookup] -> [status:OK] [[{10 40 80}]]
 	//test: Resolve[[]lookup] -> [status:OK] [[{15 42 85}]]
 

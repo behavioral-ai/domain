@@ -76,7 +76,7 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc) Resolution 
 	r := new(resolution)
 	if notifier == nil {
 		notifier = func(e messaging.Event) {
-			fmt.Printf("notify-> [name:%v] [msg:%v] [src:%v] [agent:%v]\n", e.Name(), e.Content(), e.Source(), e.AgentId())
+			fmt.Printf("notify-> [%v] [%v] [%v] [%v]\n", e.Name(), e.Content(), e.Source(), e.AgentId())
 		}
 	}
 	r.notifier = notifier

@@ -103,9 +103,11 @@ func (a *agentT) load(dir string) *messaging.Status {
 	if dir == "" {
 		return messaging.StatusOK()
 	}
-	err := loadContent(a.notify, a.cache, dir)
+	err := loadContent(a.cache, dir)
 	if err != nil {
-		return messaging.StatusBadRequest()
+		status := messaging.NewStatusError(messaging.StatusIOError, err, "", a)
+		a.notify(status)
+		return status
 	}
 	return messaging.StatusOK()
 }
@@ -116,17 +118,17 @@ func (a *agentT) getContent(name string, version int) ([]byte, *messaging.Status
 		return buf, status
 	}
 	if status.Code == http.StatusBadRequest {
-		a.notify(status)
+		//a.notify(status)
 		return nil, status
 	}
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
-		a.notify(status)
+		//a.notify(status)
 		return nil, status
 	}
 	status = a.cache.put(name, buf, version)
 	if !status.OK() {
-		a.notify(status)
+		//a.notify(status)
 		return nil, status
 	}
 	return buf, messaging.StatusOK()
@@ -135,12 +137,12 @@ func (a *agentT) getContent(name string, version int) ([]byte, *messaging.Status
 func (a *agentT) putContent(name, author string, buf []byte, version int) *messaging.Status {
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
-		a.notify(status)
+		//a.notify(status)
 		return status
 	}
 	status = a.cache.put(name, buf, version)
 	if !status.OK() {
-		a.notify(status)
+		//a.notify(status)
 	}
 	return status
 }
