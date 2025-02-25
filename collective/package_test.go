@@ -22,7 +22,7 @@ func ExampleResolveString() {
 	}
 
 	//Output:
-	//test: Resolve[text]() -> [Bad Request [err:error: BadRequest - resolver is nil] [msg:]] [{}]
+	//test: Resolve[text]() -> [Bad Request [err:error: BadRequest - resolver is nil] [msg:] [agent:<nil>]] [{}]
 
 }
 

@@ -21,6 +21,7 @@ type agentT struct {
 	uri       []string
 	duration  time.Duration
 	cache     *contentT
+	mapCache  *mapT
 	resolver  resolutionFunc
 
 	emissary   *messaging.Channel
@@ -35,6 +36,7 @@ func newContentAgent(ephemeral bool, dispatcher messaging.Dispatcher) *agentT {
 	a.agentId = agentUri
 	a.duration = defaultDuration
 	a.cache = newContentCache()
+	a.mapCache = newMapCache()
 	if ephemeral {
 		a.resolver = fileResolution
 	} else {
@@ -107,7 +109,7 @@ func (a *agentT) load(dir string) *messaging.Status {
 	}
 	err := loadContent(a.cache, dir)
 	if err != nil {
-		status := messaging.NewStatusError(messaging.StatusIOError, err, "", a)
+		status := messaging.NewStatusError(messaging.StatusIOError, err, "", a.Uri())
 		a.notify(status)
 		return status
 	}
@@ -116,7 +118,7 @@ func (a *agentT) load(dir string) *messaging.Status {
 
 func (a *agentT) getContent(name string, version int) (buf []byte, status *messaging.Status) {
 	if name == "" || version <= 0 {
-		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", a)
+		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", a.Uri())
 	}
 	var err error
 	buf, err = a.cache.get(name, version)
@@ -126,7 +128,7 @@ func (a *agentT) getContent(name string, version int) (buf []byte, status *messa
 	// Cache miss
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
-		status.SetAgent(a)
+		status.SetAgent(a.Uri())
 		status.SetMessage(fmt.Sprintf("name %v and version %v", name, version))
 		return nil, status
 	}
@@ -136,11 +138,11 @@ func (a *agentT) getContent(name string, version int) (buf []byte, status *messa
 
 func (a *agentT) putContent(name, author string, buf []byte, version int) *messaging.Status {
 	if name == "" || author == "" || buf == nil || version <= 0 {
-		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", a)
+		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v version %v", name, version)), "", a.Uri())
 	}
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
-		return status.SetAgent(a)
+		return status.SetAgent(a.Uri())
 	}
 	a.cache.put(name, buf, version)
 	return status
@@ -148,14 +150,38 @@ func (a *agentT) putContent(name, author string, buf []byte, version int) *messa
 
 func (a *agentT) getMap(name string) (map[string]string, *messaging.Status) {
 	if name == "" {
-		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v", name)), "", a)
+		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("map name [%v] is empty", name)), "", a.Uri())
 	}
-	return nil, messaging.StatusNotFound().SetAgent(a)
+	m, err := a.mapCache.get(name)
+	if err == nil {
+		return m, messaging.StatusOK()
+	}
+	// Cache miss
+	buf, status := a.resolver(http.MethodGet, name, "", nil, 1)
+	if !status.OK() {
+		status.SetAgent(a.Uri())
+		status.SetMessage(fmt.Sprintf("map name [%v] not found", name))
+		return nil, status
+	}
+	// TODO : parse buf into map
+	if len(buf) > 0 {
+	}
+	return nil, messaging.StatusNotFound().SetAgent(a.Uri())
 }
 
 func (a *agentT) putMap(name, author string, m map[string]string) *messaging.Status {
 	if name == "" || author == "" || m == nil {
-		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v or map", name)), "", a)
+		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("invalid argument name [%v],author [%v] or map", name, author)), "", a.Uri())
 	}
-	return messaging.StatusBadRequest().SetAgent(a)
+	/*
+		_, status := a.resolver(http.MethodPut, name, author, nil, 1)
+		if !status.OK() {
+			return status.SetAgent(a.Uri())
+		}
+	*/
+	err := a.mapCache.put(name, m)
+	if err == nil {
+		return messaging.StatusOK()
+	}
+	return messaging.StatusBadRequest().SetAgent(a.Uri())
 }

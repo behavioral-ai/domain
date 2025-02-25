@@ -29,7 +29,7 @@ func ExampleNewContentCache() {
 	}
 
 	//Output:
-	//test: newContentCache.get(2) -> [status:Not Found]
+	//test: newContentCache.get(2) -> [status:content [test:thing:text] [2] not found]
 	//test: newContentCache.get(1) -> [status:<nil>]
 	//test: json.Unmarshal() -> [err:<nil>] [{Hello World!}]
 

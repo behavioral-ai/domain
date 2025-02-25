@@ -21,6 +21,7 @@ const (
 	GuidanceNSS = "guidance" // urn:{NID}:guidance2:{path}
 	EventNSS    = "event"    // urn:{NID}:event:{path}
 
+	ResolutionKeyName = "resolution-key"
 )
 
 // HttpExchange - exchange type
@@ -98,7 +99,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	var t T
 
 	if resolver == nil {
-		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "", toAgent(resolver))
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "", "<nil>")
 	}
 	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
@@ -116,7 +117,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), "", toAgent(resolver))
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), "", toAgent(resolver).Uri())
 		}
 	}
 	return t, messaging.StatusOK()
