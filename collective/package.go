@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/behavioral-ai/core/messaging"
 	"net/http"
+	"time"
 )
 
 // Applications can create as many domains/NISD as needed
@@ -72,7 +73,7 @@ type Resolution interface {
 }
 
 // NewEphemeralResolver - in memory resolver
-func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc) Resolution {
+func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, enableActivity bool) Resolution {
 	r := new(resolution)
 	if notifier == nil {
 		notifier = func(e messaging.Event) {
@@ -81,7 +82,9 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc) Resolution 
 	}
 	r.notifier = notifier
 	r.activity = func(agent messaging.Agent, event, source string, content any) {
-		//fmt.Printf("activity -> [%v] [event:%v] [src:%v] [content:%v]\n", agent.Uri(), event, source, content)
+		if enableActivity {
+			fmt.Printf("activity-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
+		}
 	}
 	r.agent = newContentAgent(true, nil)
 	r.agent.notifier = notifier

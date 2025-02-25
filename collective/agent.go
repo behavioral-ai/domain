@@ -126,8 +126,8 @@ func (a *agentT) getContent(name string, version int) (buf []byte, status *messa
 	// Cache miss
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
-		status.AgentUri = a.Uri()
-		status.Msg = fmt.Sprintf("name %v and version %v", name, version)
+		status.SetAgent(a)
+		status.SetMessage(fmt.Sprintf("name %v and version %v", name, version))
 		return nil, status
 	}
 	a.cache.put(name, buf, version)
@@ -140,8 +140,7 @@ func (a *agentT) putContent(name, author string, buf []byte, version int) *messa
 	}
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
-		status.AgentUri = a.Uri()
-		return status
+		return status.SetAgent(a)
 	}
 	a.cache.put(name, buf, version)
 	return status
@@ -151,12 +150,12 @@ func (a *agentT) getMap(name string) (map[string]string, *messaging.Status) {
 	if name == "" {
 		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v", name)), "", a)
 	}
-	return nil, messaging.StatusNotFound()
+	return nil, messaging.StatusNotFound().SetAgent(a)
 }
 
 func (a *agentT) putMap(name, author string, m map[string]string) *messaging.Status {
 	if name == "" || author == "" || m == nil {
 		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v or map", name)), "", a)
 	}
-	return messaging.StatusBadRequest()
+	return messaging.StatusBadRequest().SetAgent(a)
 }
