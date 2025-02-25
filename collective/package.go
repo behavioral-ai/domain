@@ -84,7 +84,7 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, enableActiv
 	r.notifier = notifier
 	r.activity = func(agent messaging.Agent, event, source string, content any) {
 		if enableActivity {
-			fmt.Printf("activity-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
+			fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
 		}
 	}
 	r.agent = newContentAgent(true, nil)
