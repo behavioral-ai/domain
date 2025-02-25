@@ -3,7 +3,7 @@ package collective
 import (
 	"fmt"
 	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/core/test"
+	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/domain/testrsc"
 	"strings"
 )
@@ -117,7 +117,7 @@ func ExampleEphemeralLoad() {
 	name2 := "resiliency:thing/operative/agent/threshold"
 	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
 
-	r := NewEphemeralResolver(dir, test.Notify)
+	r := NewEphemeralResolver(dir, messaging.Notify)
 	//fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
 	v, status1 := Resolve[[]lookup](name1, 1, r)

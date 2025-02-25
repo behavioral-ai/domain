@@ -9,6 +9,13 @@ type text struct {
 	Value string
 }
 
+func toAgent(resolver Resolution) messaging.Agent {
+	if r, ok := any(resolver).(resolution); ok {
+		return r.agent
+	}
+	return nil
+}
+
 // resolutionFunc - data store function
 type resolutionFunc func(method, name, author string, body []byte, version int) ([]byte, *messaging.Status)
 

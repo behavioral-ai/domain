@@ -3,7 +3,6 @@ package collective
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/behavioral-ai/core/test"
 )
 
 func ExampleResolveString() {
@@ -19,11 +18,11 @@ func ExampleResolveString() {
 		//fmt.Printf("test: newContentCache.put(1) -> [status:%v]\n", status)
 
 		v, status1 := Resolve[text](name, 1, nil)
-		fmt.Printf("test: Resolve[text]() -> [status:%v] [%v]\n", status1, v)
+		fmt.Printf("test: Resolve[text]() -> [%v] [%v]\n", status1, v)
 	}
 
 	//Output:
-	//test: Resolve[text]() -> [status:Bad Request [err:error: BadRequest - resolver is nil] [src:]] [{}]
+	//test: Resolve[text]() -> [Bad Request [err:error: BadRequest - resolver is nil] [msg:]] [{}]
 
 }
 
@@ -31,7 +30,7 @@ func ExampleEphemeralResolver() {
 	name := "test:thing/string"
 	s := "test Ephemeral resolver"
 
-	r := NewEphemeralResolver("", test.Notify)
+	r := NewEphemeralResolver("", nil)
 	//fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
 	status := r.PutContent(name, "author", s, 1)

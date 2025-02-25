@@ -127,7 +127,7 @@ func (a *agentT) getContent(name string, version int) (buf []byte, status *messa
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
 		status.AgentUri = a.Uri()
-		status.Src = fmt.Sprintf("name %v and version %v", name, version)
+		status.Msg = fmt.Sprintf("name %v and version %v", name, version)
 		return nil, status
 	}
 	a.cache.put(name, buf, version)
@@ -155,7 +155,7 @@ func (a *agentT) getMap(name string) (map[string]string, *messaging.Status) {
 }
 
 func (a *agentT) putMap(name, author string, m map[string]string) *messaging.Status {
-	if name == "" || m == nil {
+	if name == "" || author == "" || m == nil {
 		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid argument name %v or map", name)), "", a)
 	}
 	return messaging.StatusBadRequest()

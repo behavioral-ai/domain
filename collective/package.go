@@ -76,7 +76,7 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc) Resolution 
 	r := new(resolution)
 	if notifier == nil {
 		notifier = func(e messaging.Event) {
-			fmt.Printf("notify-> [%v] [%v] [%v] [%v]\n", e.AgentId(), e.Name(), e.Source(), e.Content())
+			messaging.Notify(e)
 		}
 	}
 	r.notifier = notifier
@@ -93,13 +93,9 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc) Resolution 
 // Resolve - generic typed resolution
 func Resolve[T any](name string, version int, resolver Resolution) (T, *messaging.Status) {
 	var t T
-	var agent messaging.Agent
 
 	if resolver == nil {
-		if r, ok := any(resolver).(resolution); ok {
-			agent = r.agent
-		}
-		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "", agent)
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "", toAgent(resolver))
 	}
 	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
@@ -117,24 +113,8 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			if r, ok := any(resolver).(resolution); ok {
-				agent = r.agent
-			}
-			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), "", agent)
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), "", toAgent(resolver))
 		}
 	}
 	return t, messaging.StatusOK()
 }
-
-/*
-// Initialize - collective initialize, hosts are service hosts for cloud collective
-func Initialize(handler messaging.OpsAgent, ex HttpExchange, hosts []string) error {
-	if ex == nil || handler == nil || len(hosts) == 0 {
-		return errors.New("error: bad request, handler, exchange, or hosts are empty")
-	}
-	// Where to set hosts??
-	do = ex
-	agent = newHttpAgent(handler)
-	return nil
-}
-*/
