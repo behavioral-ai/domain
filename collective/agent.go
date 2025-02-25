@@ -127,6 +127,7 @@ func (a *agentT) getContent(name string, version int) (buf []byte, status *messa
 	buf, status = a.resolver(http.MethodGet, name, "", nil, version)
 	if !status.OK() {
 		status.AgentUri = a.Uri()
+		status.Src = fmt.Sprintf("name %v and version %v", name, version)
 		return nil, status
 	}
 	a.cache.put(name, buf, version)
