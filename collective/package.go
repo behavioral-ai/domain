@@ -28,7 +28,8 @@ const (
 type HttpExchange func(r *http.Request) (*http.Response, error)
 
 // Startup - run the agents
-func Startup(uri []string, do HttpExchange) {
+func Startup(uri []string, do HttpExchange, hostName string) {
+	appHostName = hostName
 	if r, ok := any(Resolver).(*resolution); ok {
 		if do != nil {
 			r.do = do
@@ -39,9 +40,14 @@ func Startup(uri []string, do HttpExchange) {
 	}
 }
 
+func Shutdown() {
+
+}
+
 // Append -
 var (
-	Append = newHttpAppender()
+	Append      = newHttpAppender()
+	appHostName string
 )
 
 // Appender - collective append
@@ -82,7 +88,7 @@ func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, enableActiv
 		}
 	}
 	r.notifier = notifier
-	r.activity = func(agent messaging.Agent, event, source string, content any) {
+	r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
 		if enableActivity {
 			fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
 		}

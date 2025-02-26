@@ -20,7 +20,7 @@ func toAgent(resolver Resolution) messaging.Agent {
 type resolutionFunc func(method, name, author string, body []byte, version int) ([]byte, *messaging.Status)
 
 // addActivityFunc -
-type addActivityFunc func(agent messaging.Agent, event, source string, content any)
+type addActivityFunc func(hostName string, agent messaging.Agent, event, source string, content any)
 
 type resolution struct {
 	do       HttpExchange
@@ -80,9 +80,9 @@ func (r *resolution) PutMap(name, author string, m map[string]string) *messaging
 // AddActivity - resolution activity
 func (r *resolution) AddActivity(agent messaging.Agent, event, source string, content any) {
 	if r.activity != nil {
-		r.activity(agent, event, source, content)
+		r.activity(appHostName, agent, event, source, content)
 	} else {
-		// TODO: add call to append activity
+		// TODO: add call to append activity, include appHostName
 	}
 }
 
@@ -91,6 +91,6 @@ func (r *resolution) Notify(e messaging.Event) {
 	if r.notifier != nil {
 		r.notifier(e)
 	} else {
-		// TODO: add call to notify
+		// TODO: add call to notify, include appHostName
 	}
 }
