@@ -43,8 +43,8 @@ func newContentAgent(ephemeral bool, dispatcher messaging.Dispatcher) *agentT {
 		a.resolver = httpResolution
 	}
 
-	a.emissary = messaging.NewEmissaryChannel(true)
-	a.master = messaging.NewMasterChannel(true)
+	a.emissary = messaging.NewEmissaryChannel()
+	a.master = messaging.NewMasterChannel()
 	a.dispatcher = dispatcher
 	return a
 }
@@ -85,14 +85,18 @@ func (a *agentT) Run() {
 
 // Shutdown - shutdown the agent
 func (a *agentT) Shutdown() {
-	if !a.running {
-		return
+	//if !a.running {
+	//	return
+	//}
+	//a.running = false
+	//a.emissary.Enable()
+	if !a.emissary.IsClosed() {
+		a.emissary.Send(messaging.Shutdown)
 	}
-	a.running = false
-	a.emissary.Enable()
-	a.emissary.Send(messaging.Shutdown)
-	a.master.Enable()
-	a.master.Send(messaging.Shutdown)
+	//a.master.Enable()
+	if !a.master.IsClosed() {
+		a.master.Send(messaging.Shutdown)
+	}
 }
 
 func (a *agentT) notify(e messaging.Event) {
