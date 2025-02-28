@@ -52,7 +52,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 		v := text{ptr}
 		buf, err = json.Marshal(v)
 		if err != nil {
-			return messaging.NewStatusError(messaging.StatusJsonEncodeError, err, "", r.agent.Uri())
+			return messaging.NewStatusError(messaging.StatusJsonEncodeError, err, r.agent.Uri())
 		}
 	case []byte:
 		buf = ptr
@@ -61,7 +61,7 @@ func (r *resolution) PutContent(name, author string, content any, version int) *
 
 		buf, err = json.Marshal(ptr)
 		if err != nil {
-			return messaging.NewStatusError(messaging.StatusJsonEncodeError, err, "", r.agent.Uri())
+			return messaging.NewStatusError(messaging.StatusJsonEncodeError, err, r.agent.Uri())
 		}
 	}
 	return r.agent.putContent(name, author, buf, version)

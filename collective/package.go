@@ -9,18 +9,8 @@ import (
 	"time"
 )
 
-// Applications can create as many domains/NISD as needed
-
 const (
-	ResourceUri = "urn:collective"
-	AgentNSS    = "agent"    // urn:{NID}:thing:{module-package}:{type}
-	ThingNSS    = "thing"    // urn:{NID}:thing:{module-package}:{type}
-	AspectNSS   = "aspect"   // urn:{NID}:aspect:{path}
-	FrameNSS    = "frame"    // urn:{NID}:frame:{path}
-	LikenessNSS = "likeness" // urn:{NID}:likeness:{path}
-	GuidanceNSS = "guidance" // urn:{NID}:guidance2:{path}
-	EventNSS    = "event"    // urn:{NID}:event:{path}
-
+	ResourceUri       = "urn:collective"
 	ResolutionKeyName = "resolution-key"
 )
 
@@ -44,23 +34,10 @@ func Shutdown() {
 
 }
 
-// Append -
-var (
-	Append      = newHttpAppender()
-	appHostName string
-)
-
-// Appender - collective append
-type Appender interface {
-	Thing(name, author string, related []string) *messaging.Status
-	Relation(name1, name2, author string) *messaging.Status
-	Frame(name, author string, contains []string, version int) *messaging.Status
-	Guidance(name, author, text string, related []string) *messaging.Status
-}
-
 // Resolver - collective resolution in the real world
 var (
-	Resolver = newHttpResolver()
+	appHostName string
+	Resolver    = newHttpResolver()
 )
 
 // ResolutionKey -
@@ -105,7 +82,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	var t T
 
 	if resolver == nil {
-		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "", "<nil>")
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "<nil>")
 	}
 	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
@@ -123,7 +100,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), "", toAgent(resolver).Uri())
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonEncode - %v", err)), toAgent(resolver).Uri())
 		}
 	}
 	return t, messaging.StatusOK()
