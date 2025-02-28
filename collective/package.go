@@ -57,22 +57,22 @@ type Resolution interface {
 }
 
 // NewEphemeralResolver - in memory resolver
-func NewEphemeralResolver(dir string, notifier messaging.NotifyFunc, enableActivity bool) Resolution {
+func NewEphemeralResolver() Resolution {
+	return InitializedEphemeralResolver("")
+}
+
+// InitializedEphemeralResolver - in memory resolver, initialized with state
+func InitializedEphemeralResolver(dir string) Resolution {
 	r := new(resolution)
-	if notifier == nil {
-		notifier = func(e messaging.Event) {
-			messaging.Notify(e)
-		}
-	}
-	r.notifier = notifier
+	r.notifier = messaging.Notify
 	r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
-		if enableActivity {
-			fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
-		}
+		fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
 	}
 	r.agent = newContentAgent(true, nil)
-	r.agent.notifier = notifier
-	r.agent.load(dir)
+	r.agent.notifier = r.notifier
+	if dir != "" {
+		r.agent.load(dir)
+	}
 	r.agent.Run()
 	return r
 }
