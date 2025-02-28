@@ -10,6 +10,9 @@ type text struct {
 }
 
 func toAgent(resolver Resolution) messaging.Agent {
+	if resolver == nil {
+		return nil
+	}
 	if r, ok := any(resolver).(resolution); ok {
 		return r.agent
 	}
