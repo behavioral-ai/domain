@@ -64,9 +64,9 @@ func (a *agentT) Message(m *messaging.Message) {
 		return
 	}
 	switch m.Channel() {
-	case messaging.EmissaryChannel:
+	case messaging.Emissary:
 		a.emissary.Send(m)
-	case messaging.MasterChannel:
+	case messaging.Master:
 		a.master.Send(m)
 	default:
 		a.emissary.Send(m)
