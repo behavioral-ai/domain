@@ -10,7 +10,7 @@ func emissaryAttend(agent *agentT) {
 	var paused = false
 	if paused {
 	}
-	ticker := messaging.NewPrimaryTicker(agent.duration)
+	ticker := messaging.NewTicker(messaging.Emissary, agent.duration)
 
 	ticker.Start(-1)
 	for {
