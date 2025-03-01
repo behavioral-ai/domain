@@ -5,25 +5,25 @@ import (
 	"github.com/behavioral-ai/domain/common"
 )
 
-func ExampleGet() {
+func ExampleGetObservation() {
 	o := common.Origin{Region: common.EastRegion, Zone: common.WestZoneA}
-	e, status := get(o)
+	e, status := getObservation(o)
 	fmt.Printf("test: Get(\"%v\") -> [status:%v] [%v]\n", o, status, e)
 
 	o = common.Origin{Region: common.WestRegion, Zone: common.WestZoneA}
-	e, status = get(o)
+	e, status = getObservation(o)
 	fmt.Printf("test: Get(\"%v\") -> [status:%v] [%v]\n", o, status, e)
 
 	o = common.Origin{Region: common.WestRegion, Zone: common.WestZoneB}
-	e, status = get(o)
+	e, status = getObservation(o)
 	fmt.Printf("test: Get(\"%v\") -> [status:%v] [%v]\n", o, status, e)
 
 	o = common.Origin{Region: common.CentralRegion, Zone: common.CentralZoneA}
-	e, status = get(o)
+	e, status = getObservation(o)
 	fmt.Printf("test: Get(\"%v\") -> [status:%v] [%v]\n", o, status, e)
 
 	o = common.Origin{Region: common.CentralRegion, Zone: common.CentralZoneB}
-	e, status = get(o)
+	e, status = getObservation(o)
 	fmt.Printf("test: Get(\"%v\") -> [status:%v] [%v]\n", o, status, e)
 
 	//Output:
@@ -38,7 +38,7 @@ func ExampleGet() {
 func ExampleGetReset() {
 	o := common.Origin{Region: common.WestRegion, Zone: common.WestZoneA}
 	for i := 0; i < 5; i++ {
-		e, status := get(o)
+		e, status := getObservation(o)
 		fmt.Printf("test: Get(\"%v\") -> [status:%v] [%v]\n", o, status, e)
 
 	}

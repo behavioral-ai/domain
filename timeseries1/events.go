@@ -13,51 +13,51 @@ var (
 	centralZoneB = common.Origin{Region: common.CentralRegion, Zone: common.CentralZoneB, Host: "host4.com"}
 
 	westZoneAIndex  = 0
-	westZoneASeries = []Entry{
+	westZoneASeries = []Observation{
 		{Origin: westZoneA, Latency: 1500, Gradient: 2},
 		{Origin: westZoneA, Latency: 1200, Gradient: 25},
 	}
 
 	westZoneBIndex  = 0
-	westZoneBSeries = []Entry{
+	westZoneBSeries = []Observation{
 		{Origin: westZoneB, Latency: 900, Gradient: 33},
 		{Origin: westZoneB, Latency: 500, Gradient: 2},
 	}
 
 	centralZoneAIndex  = 0
-	centralZoneASeries = []Entry{
+	centralZoneASeries = []Observation{
 		{Origin: centralZoneA, Latency: 2000, Gradient: 55},
 		{Origin: centralZoneA, Latency: 300, Gradient: 6},
 	}
 
 	centralZoneBIndex  = 0
-	centralZoneBSeries = []Entry{
+	centralZoneBSeries = []Observation{
 		{Origin: centralZoneB, Latency: 850, Gradient: 25},
 		{Origin: centralZoneB, Latency: 1256, Gradient: 76},
 	}
 )
 
-func get(o common.Origin) (Entry, *messaging.Status) {
+func getObservation(o common.Origin) (Observation, *messaging.Status) {
 	switch o.Region {
 	case common.WestRegion:
 		switch o.Zone {
 		case common.WestZoneA:
-			return getEntry(&westZoneAIndex, westZoneASeries), messaging.StatusOK()
+			return indexObservation(&westZoneAIndex, westZoneASeries), messaging.StatusOK()
 		case common.WestZoneB:
-			return getEntry(&westZoneBIndex, westZoneBSeries), messaging.StatusOK()
+			return indexObservation(&westZoneBIndex, westZoneBSeries), messaging.StatusOK()
 		}
 	case common.CentralRegion:
 		switch o.Zone {
 		case common.CentralZoneA:
-			return getEntry(&centralZoneAIndex, centralZoneASeries), messaging.StatusOK()
+			return indexObservation(&centralZoneAIndex, centralZoneASeries), messaging.StatusOK()
 		case common.CentralZoneB:
-			return getEntry(&centralZoneBIndex, centralZoneBSeries), messaging.StatusOK()
+			return indexObservation(&centralZoneBIndex, centralZoneBSeries), messaging.StatusOK()
 		}
 	}
-	return Entry{}, messaging.StatusNotFound()
+	return Observation{}, messaging.StatusNotFound()
 }
 
-func getEntry(index *int, series []Entry) Entry {
+func indexObservation(index *int, series []Observation) Observation {
 	if *index >= len(series) {
 		*index = 0
 	}
