@@ -14,7 +14,7 @@ var (
 
 	westZoneAIndex  = 0
 	westZoneASeries = []Observation{
-		{Origin: westZoneA, Latency: 1500, Gradient: 2},
+		{Origin: westZoneA, Latency: 500, Gradient: 2},
 		{Origin: westZoneA, Latency: 1200, Gradient: 25},
 	}
 
