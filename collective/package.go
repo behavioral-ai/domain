@@ -27,6 +27,10 @@ func Startup(uri []string, do HttpExchange, hostName string) {
 		r.agent.notifier = r.Notify
 		r.agent.uri = uri
 		r.agent.Run()
+		status := loadResolver(r)
+		if !status.OK() {
+			fmt.Printf("error on loading Resolver: %v\n", status)
+		}
 	}
 }
 
