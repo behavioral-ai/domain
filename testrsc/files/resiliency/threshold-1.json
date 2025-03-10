@@ -1,6 +1,6 @@
 {
     "resolution-key": {
-      "name": "resiliency:thing/operative/agent/threshold",
+      "name": "resiliency:type/operative/agent/threshold",
       "version": 1
     },
     "latency":2000,

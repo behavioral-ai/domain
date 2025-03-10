@@ -80,14 +80,14 @@ func ExampleLookupKey() {
 */
 
 func ExampleParseResolutionKey() {
-	buf, _ := iox.ReadFile(testrsc.ResiliencyGradient)
+	buf, _ := iox.ReadFile(testrsc.ResiliencyTrafficProfile1)
 	s := string(buf)
 
 	k, err := parseResolutionKey(s)
 	fmt.Printf("test: ParseResolutionKey() -> [err:%v] [%v]\n", err, k)
 
 	//Output:
-	//test: ParseResolutionKey() -> [err:<nil>] [{resiliency:thing/operative/agent/gradient 1}]
+	//test: ParseResolutionKey() -> [err:<nil>] [{resiliency:type/domain/metrics/profile 1}]
 
 }
 

@@ -1,7 +1,7 @@
 [
   {
     "resolution-key": {
-      "name": "resiliency:thing/operative/agent/interpret",
+      "name": "resiliency:type/operative/agent/interpret",
       "version": 2
     },
     "low-low":0,
