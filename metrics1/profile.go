@@ -3,9 +3,10 @@ package metrics1
 import "time"
 
 const (
-	Low    = "low"
-	Medium = "med"
-	High   = "high"
+	TrafficLow    = "low"
+	TrafficMedium = "med"
+	TrafficHigh   = "high"
+	ProfileName   = "resiliency:type/domain/metrics/profile"
 )
 
 type TrafficProfile struct {
