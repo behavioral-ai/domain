@@ -9,6 +9,7 @@ import (
 
 const (
 	ContentTypeCalendar = "application/calendar"
+	ProfileName         = "resiliency:type/domain/metrics/profile"
 )
 
 func CalendarTypeErrorStatus(agentId string, t any) *aspect.Status {

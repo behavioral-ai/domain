@@ -19,7 +19,9 @@ func NewTrafficProfile() *TrafficProfile {
 
 func (t *TrafficProfile) Now() string {
 	ts := time.Now().UTC()
-	return t.Week[ts.Day()][ts.Hour()]
+	day := ts.Weekday()
+	hour := ts.Hour()
+	return t.Week[day][hour]
 }
 
 //func dayHour(t *TrafficPofile)
