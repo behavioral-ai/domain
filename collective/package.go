@@ -17,6 +17,22 @@ const (
 // HttpExchange - exchange type
 type HttpExchange func(r *http.Request) (*http.Response, error)
 
+// Resolver - collective resolution in the real world
+var (
+	appHostName string
+	Resolver    = newHttpResolver()
+)
+
+func init() {
+	if r, ok := any(Resolver).(*resolution); ok {
+		r.agent.notifier = r.Notify
+		// Testing
+		r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
+			fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
+		}
+	}
+}
+
 // Startup - run the agents
 func Startup(uri []string, do HttpExchange, hostName string) {
 	appHostName = hostName
@@ -24,13 +40,12 @@ func Startup(uri []string, do HttpExchange, hostName string) {
 		if do != nil {
 			r.do = do
 		}
-		r.agent.notifier = r.Notify
 		r.agent.uri = uri
 		r.agent.Run()
 		// Testing
-		r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
-			fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
-		}
+		//r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
+		//	fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
+		//}
 		status := loadResolver(r)
 		if !status.OK() {
 			fmt.Printf("error on loading Resolver: %v\n", status)
@@ -41,12 +56,6 @@ func Startup(uri []string, do HttpExchange, hostName string) {
 func Shutdown() {
 
 }
-
-// Resolver - collective resolution in the real world
-var (
-	appHostName string
-	Resolver    = newHttpResolver()
-)
 
 // ResolutionKey -
 type ResolutionKey struct {
