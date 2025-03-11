@@ -25,6 +25,18 @@ func (t *TrafficProfile) Now() string {
 	return t.Week[day][hour]
 }
 
+func (t *TrafficProfile) IsMedium(tr string) bool {
+	return tr == TrafficMedium
+}
+
+func (t *TrafficProfile) IsHigh(tr string) bool {
+	return tr == TrafficHigh
+}
+
+func (t *TrafficProfile) IsLow(tr string) bool {
+	return tr == TrafficLow
+}
+
 //func dayHour(t *TrafficPofile)
 
 /*
