@@ -115,7 +115,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 			} else {
 				uri = agent.Uri()
 			}
-			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonDecode - %v", err)), uri)
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonDecode - %v for : %v", err, name)), uri)
 		}
 	}
 	return t, messaging.StatusOK()
