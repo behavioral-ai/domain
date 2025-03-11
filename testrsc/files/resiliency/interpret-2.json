@@ -1,5 +1,4 @@
-[
-  {
+{
     "resolution-key": {
       "name": "resiliency:type/operative/agent/interpret",
       "version": 2
@@ -14,4 +13,4 @@
     "high-medium":7,
     "high-high":8
   }
-]
+
