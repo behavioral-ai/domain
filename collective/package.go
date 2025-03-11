@@ -25,8 +25,8 @@ var (
 
 func init() {
 	if r, ok := any(Resolver).(*resolution); ok {
-		r.agent.notifier = r.Notify
 		// Testing
+		r.agent.notifier = messaging.Notify
 		r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
 			fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
 		}
