@@ -111,7 +111,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 			uri := ""
 			agent := toAgent(resolver)
 			if agent == nil {
-				uri = ""
+				uri = "<nil>"
 			} else {
 				uri = agent.Uri()
 			}
