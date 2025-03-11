@@ -90,7 +90,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	var t T
 
 	if resolver == nil {
-		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New("error: BadRequest - resolver is nil"), "<nil>")
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: BadRequest - resolver is nil for : %v", name)), "<nil>")
 	}
 	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
