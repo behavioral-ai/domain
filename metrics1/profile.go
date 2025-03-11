@@ -3,9 +3,9 @@ package metrics1
 import "time"
 
 const (
-	TrafficLow    = "low"
-	TrafficMedium = "med"
-	TrafficHigh   = "high"
+	trafficLow    = "low"
+	trafficMedium = "med"
+	trafficHigh   = "high"
 	ProfileName   = "resiliency:type/domain/metrics/profile"
 )
 
@@ -26,15 +26,15 @@ func (t *TrafficProfile) Now() string {
 }
 
 func (t *TrafficProfile) IsMedium(tr string) bool {
-	return tr == TrafficMedium
+	return tr == trafficMedium
 }
 
 func (t *TrafficProfile) IsHigh(tr string) bool {
-	return tr == TrafficHigh
+	return tr == trafficHigh
 }
 
 func (t *TrafficProfile) IsLow(tr string) bool {
-	return tr == TrafficLow
+	return tr == trafficLow
 }
 
 //func dayHour(t *TrafficPofile)
