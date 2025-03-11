@@ -108,11 +108,9 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			uri := ""
+			uri := "<nil>"
 			agent := toAgent(resolver)
-			if agent == nil {
-				uri = "<nil>"
-			} else {
+			if agent != nil {
 				uri = agent.Uri()
 			}
 			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonDecode - %v for : %v", err, name)), uri)
