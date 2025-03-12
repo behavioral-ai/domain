@@ -100,7 +100,7 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	var t T
 
 	if resolver == nil {
-		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: BadRequest - resolver is nil for : %v", name)), "<nil>")
+		return t, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: BadRequest - resolver is nil for : %v", name)), Name)
 	}
 	body, status := resolver.GetContent(name, version)
 	if !status.OK() {
@@ -118,12 +118,12 @@ func Resolve[T any](name string, version int, resolver Resolution) (T, *messagin
 	default:
 		err := json.Unmarshal(body, ptr)
 		if err != nil {
-			uri := "<nil>"
-			agent := toAgent(resolver)
-			if agent != nil {
-				uri = agent.Uri()
-			}
-			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonDecode - %v for : %v", err, name)), uri)
+			//uri := "<nil>"
+			//agent := toAgent(resolver)
+			//if agent != nil {
+			//	uri = agent.Uri()
+			//}
+			return t, messaging.NewStatusError(messaging.StatusJsonDecodeError, errors.New(fmt.Sprintf("JsonDecode - %v for : %v", err, name)), Name)
 		}
 	}
 	return t, messaging.StatusOK()

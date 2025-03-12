@@ -140,7 +140,9 @@ func (a *agentT) putContent(name, author string, buf []byte, version int) *messa
 	}
 	_, status := a.resolver(http.MethodPut, name, author, buf, version)
 	if !status.OK() {
-		return status.SetAgent(a.Uri())
+		status.SetAgent(a.Uri())
+		status.SetMessage(fmt.Sprintf("name %v and version %v", name, version))
+		return status
 	}
 	a.cache.put(name, buf, version)
 	return status
