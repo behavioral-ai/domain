@@ -1,0 +1,15 @@
+{
+  "resolution-key": {
+    "name": "resiliency:type/domain/metrics/profile",
+    "version": 1
+  },
+  "Week":[
+    ["low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low"],
+    ["low","low","low","low","low","med","med","med","high","high","high","high","high","high","med","med","med","med","med","low","low","low","low","low"],
+    ["low","low","low","low","low","med","med","med","high","high","high","high","high","high","med","med","med","med","med","low","low","low","low","low"],
+    ["low","low","low","low","low","med","med","med","high","high","high","high","high","high","med","med","med","med","med","low","low","low","low","low"],
+    ["low","low","low","low","low","med","med","med","high","high","high","high","high","high","med","med","med","med","med","low","low","low","low","low"],
+    ["low","low","low","low","low","med","med","med","high","high","high","high","high","high","med","med","med","med","med","low","low","low","low","low"],
+    ["low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low","low"]
+  ]
+}
