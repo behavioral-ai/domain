@@ -8,7 +8,7 @@ import (
 	"github.com/behavioral-ai/domain/testrsc"
 )
 
-func loadProfile(r collective.Resolution) *messaging.Status {
+func LoadProfile(r collective.Resolution) *messaging.Status {
 	buf, err := iox.ReadFile(testrsc.ResiliencyTrafficProfile1)
 	if err != nil {
 		return messaging.NewStatusError(messaging.StatusIOError, err, "")
