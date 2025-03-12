@@ -116,7 +116,7 @@ func ExampleEphemeralLoad() {
 	name2 := "resiliency:thing/operative/agent/threshold"
 	dir := "file:///c:/Users/markb/GitHub/domain/testrsc/files/resiliency"
 
-	r := InitializedEphemeralResolver(dir)
+	r := initializedEphemeralResolver(dir)
 	//fmt.Printf("test: NewEphemeralResolver() -> [status:%v]\n", status)
 
 	v, status1 := Resolve[[]lookup](name1, 1, r)
