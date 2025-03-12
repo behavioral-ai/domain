@@ -3,8 +3,6 @@ package metrics1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/domain/testrsc"
 )
 
 func ExampleMarshalTrafficProfile() {
@@ -17,6 +15,7 @@ func ExampleMarshalTrafficProfile() {
 	//fail
 }
 
+/*
 func _ExampleUnmarshalTrafficProfile() {
 	p := NewTrafficProfile()
 	buf, err := iox.ReadFile(testrsc.ResiliencyTrafficProfile1)
@@ -32,7 +31,7 @@ func _ExampleUnmarshalTrafficProfile() {
 	//fail
 }
 
-/*
+
 func ExampleResolver() {
 	buf, err := iox.ReadFile(testrsc.ResiliencyTrafficProfile1)
 	fmt.Printf("test: iox.ReadFile() -> [err:%v] [buf:%v]\n", err, len(buf) > 0)
