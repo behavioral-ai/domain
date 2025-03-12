@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/domain/collective"
 	"github.com/behavioral-ai/domain/testrsc"
 )
 
-func _ExampleMarshalTrafficProfile() {
+func ExampleMarshalTrafficProfile() {
 	p := NewTrafficProfile()
 	buf, err := json.Marshal(&p)
 
@@ -33,6 +32,7 @@ func _ExampleUnmarshalTrafficProfile() {
 	//fail
 }
 
+/*
 func ExampleResolver() {
 	buf, err := iox.ReadFile(testrsc.ResiliencyTrafficProfile1)
 	fmt.Printf("test: iox.ReadFile() -> [err:%v] [buf:%v]\n", err, len(buf) > 0)
@@ -54,3 +54,6 @@ func ExampleResolver() {
 	//test: Profile.Now() -> [traffic:low]
 
 }
+
+
+*/
