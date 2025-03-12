@@ -1,9 +1,12 @@
-package collective
+package test
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/behavioral-ai/domain/collective"
+)
 
 func ExampleLoadResolver() {
-	r := NewEphemeralResolver()
+	r := collective.NewEphemeralResolver()
 	status := loadResolver(r)
 	fmt.Printf("test: loadResolver() -> [status:%v]\n", status)
 

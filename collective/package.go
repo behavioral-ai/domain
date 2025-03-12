@@ -43,14 +43,6 @@ func Startup(uri []string, do HttpExchange, hostName string) {
 		}
 		r.agent.uri = uri
 		r.agent.Run()
-		// Testing
-		//r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
-		//	fmt.Printf("active-> %v [%v] [%v] [%v] [%v]\n", messaging.FmtRFC3339Millis(time.Now().UTC()), agent.Uri(), event, source, content)
-		//}
-		status := loadResolver(r)
-		if !status.OK() {
-			fmt.Printf("error on loading Resolver: %v\n", status)
-		}
 	}
 }
 
