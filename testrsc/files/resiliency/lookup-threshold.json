@@ -1,0 +1,11 @@
+[
+  {
+    "resolution-key": {
+      "name": "resiliency:thing/operative/agent/threshold",
+      "version": 2
+    },
+    "low":15,
+    "medium":42,
+    "high":85
+  }
+]

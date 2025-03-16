@@ -1,0 +1,18 @@
+{
+    "resolution-key": {
+      "name": "resiliency:type/operative/agent/interpret",
+      "version": 2
+    },
+    "latency":1000,
+    "saturation":{
+      "low":10,
+      "medium":20,
+      "high":300
+    },
+    "gradient":{
+      "low":2,
+      "medium":5,
+      "high":8
+    }
+  }
+

@@ -1,0 +1,11 @@
+[
+  {
+    "resolution-key": {
+      "name": "resiliency:thing/operative/agent/gradient",
+      "version": 1
+    },
+    "low":10,
+    "medium":40,
+    "high":80
+  }
+]
