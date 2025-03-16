@@ -2,12 +2,12 @@ package testrsc
 
 import (
 	"embed"
-	"github.com/behavioral-ai/core/iox"
+	"github.com/behavioral-ai/core/io"
 )
 
 //go:embed files
 var f embed.FS
 
 func init() {
-	iox.Mount(f)
+	io.Mount(f)
 }

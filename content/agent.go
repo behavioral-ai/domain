@@ -22,7 +22,6 @@ type agentT struct {
 	uri       []string
 	duration  time.Duration
 	cache     *contentT
-	mapCache  *mapT
 	resolver  resolutionFunc
 
 	ticker     *messaging.Ticker
@@ -38,7 +37,6 @@ func newContentAgent(ephemeral bool, dispatcher messaging.Dispatcher) *agentT {
 	a.agentId = agentUri
 	a.duration = defaultDuration
 	a.cache = newContentCache()
-	a.mapCache = newMapCache()
 	if ephemeral {
 		a.resolver = ephemeralResolution
 	} else {
@@ -147,42 +145,4 @@ func (a *agentT) addValue(name, author string, buf []byte, version int) *messagi
 	}
 	a.cache.put(name, buf, version)
 	return status
-}
-
-func (a *agentT) getAttributes(name string) (map[string]string, *messaging.Status) {
-	if name == "" {
-		return nil, messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("map name [%v] is empty", name)), a.Uri())
-	}
-	m, err := a.mapCache.get(name)
-	if err == nil {
-		return m, messaging.StatusOK()
-	}
-	// Cache miss
-	buf, status := a.resolver(http.MethodGet, name, "", nil, 1)
-	if !status.OK() {
-		status.SetAgent(a.Uri())
-		status.SetMessage(fmt.Sprintf("map name [%v] not found", name))
-		return nil, status
-	}
-	// TODO : parse buf into map
-	if len(buf) > 0 {
-	}
-	return nil, messaging.StatusNotFound().SetAgent(a.Uri())
-}
-
-func (a *agentT) addAttributes(name, author string, m map[string]string) *messaging.Status {
-	if name == "" || author == "" || m == nil {
-		return messaging.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("invalid argument name [%v],author [%v] or map", name, author)), a.Uri())
-	}
-	/*
-		_, status := a.resolver(http.MethodPut, name, author, nil, 1)
-		if !status.OK() {
-			return status.SetAgent(a.Uri())
-		}
-	*/
-	err := a.mapCache.put(name, m)
-	if err == nil {
-		return messaging.StatusOK()
-	}
-	return messaging.StatusBadRequest().SetAgent(a.Uri())
 }

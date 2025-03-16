@@ -15,19 +15,6 @@ type text struct {
 	Value string
 }
 
-/*
-func toAgent(resolver Resolution) messaging.Agent {
-	if resolver == nil {
-		return nil
-	}
-	if r, ok := any(resolver).(resolution); ok {
-		return r.agent
-	}
-	return nil
-}
-
-*/
-
 // resolutionFunc - data store function
 type resolutionFunc func(method, name, author string, body []byte, version int) ([]byte, *messaging.Status)
 
@@ -35,7 +22,6 @@ type resolutionFunc func(method, name, author string, body []byte, version int) 
 type addActivityFunc func(hostName string, agent messaging.Agent, event, source string, content any)
 
 type resolution struct {
-	//do       http2.Exchange
 	notifier messaging.NotifyFunc
 	activity addActivityFunc
 	hosts    []string
@@ -91,16 +77,6 @@ func (r *resolution) AddValue(nsName, author string, content any, version int) *
 		return messaging.NewStatusError(http.StatusNoContent, err, r.agent.Uri())
 	}
 	return r.agent.addValue(nsName, author, buf, version)
-}
-
-// GetAttributes - get attributes
-func (r *resolution) GetAttributes(nsName string) (map[string]string, *messaging.Status) {
-	return r.agent.getAttributes(nsName)
-}
-
-// AddAttributes - add attributes
-func (r *resolution) AddAttributes(nsName, author string, m map[string]string) *messaging.Status {
-	return r.agent.addAttributes(nsName, author, m)
 }
 
 // AddActivity - resolution activity
