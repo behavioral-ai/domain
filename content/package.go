@@ -19,7 +19,7 @@ type Resolution interface {
 	GetValue(nsName string, version int) ([]byte, *messaging.Status)
 	AddValue(nsName, author string, content any, version int) *messaging.Status
 	AddActivity(agent messaging.Agent, event, source string, content any)
-	Notify(e messaging.Event)
+	Notify(e messaging.NotifyItem)
 }
 
 // Resolver - content resolution in the real world

@@ -96,7 +96,7 @@ func (a *agentT) Shutdown() {
 	}
 }
 
-func (a *agentT) notify(e messaging.Event) {
+func (a *agentT) notify(e messaging.NotifyItem) {
 	a.notifier(e)
 }
 

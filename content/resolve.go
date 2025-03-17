@@ -89,7 +89,7 @@ func (r *resolution) AddActivity(agent messaging.Agent, event, source string, co
 }
 
 // Notify - resolution notify
-func (r *resolution) Notify(e messaging.Event) {
+func (r *resolution) Notify(e messaging.NotifyItem) {
 	if r.notifier != nil {
 		r.notifier(e)
 	} else {

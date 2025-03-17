@@ -13,7 +13,7 @@ func initializedEphemeralResolver(activity, notify bool) Resolution {
 	if notify {
 		r.notifier = messaging.Notify
 	} else {
-		r.notifier = func(event messaging.Event) {}
+		r.notifier = func(event messaging.NotifyItem) {}
 	}
 	if activity {
 		r.activity = func(hostName string, agent messaging.Agent, event, source string, content any) {
